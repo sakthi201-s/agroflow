@@ -11,6 +11,7 @@ import {
   BrainCircuit,
   Package,
   Book,
+  BookOpen,
 } from 'lucide-react';
 import Link from 'next/link';
 import {usePathname} from 'next/navigation';
@@ -30,6 +31,7 @@ import {Avatar, AvatarFallback, AvatarImage} from './ui/avatar';
 const menuItems = [
   {href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard},
   {href: '/transactions', label: 'Transactions', icon: Book},
+  {href: '/day-book', label: 'Day Book', icon: BookOpen},
   {href: '/stock', label: 'Stock Management', icon: Boxes},
   {href: '/billing', label: 'Billing', icon: Receipt},
   {href: '/customers', label: 'Customers', icon: Users},
