@@ -6,12 +6,12 @@ import React from 'react';
 export default function MainLayout({children}: {children: React.ReactNode}) {
   return (
     <SidebarProvider>
-      <AppSidebar />
-      <div className="flex flex-col">
-        <PageHeader />
-        <SidebarInset>
+      <div className="flex">
+        <AppSidebar />
+        <div className="flex-1 flex flex-col">
+          <PageHeader />
           <main className="flex-1 p-4 sm:p-6">{children}</main>
-        </SidebarInset>
+        </div>
       </div>
     </SidebarProvider>
   );

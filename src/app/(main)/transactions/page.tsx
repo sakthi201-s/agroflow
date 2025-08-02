@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { DataTable } from '@/components/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export type Transaction = {
   id: string;
@@ -64,24 +64,17 @@ const columns = [
   },
 ];
 
-export default function TransactionsPage() {
-    const [activeCompany, setActiveCompany] = useState<'Company 1' | 'Company 2'>('Company 1');
+function TransactionsComponent() {
+    const searchParams = useSearchParams();
+    const company = searchParams.get('company') || 'Company 1';
+    const activeCompany = company as 'Company 1' | 'Company 2';
+    
     const filteredData = transactionData.filter(item => item.company === activeCompany);
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Transactions</h1>
          <div className="flex items-center gap-4">
-            <Tabs
-                defaultValue="Company 1"
-                onValueChange={(value) => setActiveCompany(value as 'Company 1' | 'Company 2')}
-                className="transition-all duration-300"
-            >
-            <TabsList>
-                <TabsTrigger value="Company 1">Fertilizer & Seeds</TabsTrigger>
-                <TabsTrigger value="Company 2">Maize Import/Export</TabsTrigger>
-            </TabsList>
-            </Tabs>
             <Button>
             <PlusCircle className="mr-2 h-4 w-4" /> Create Voucher
             </Button>
@@ -90,4 +83,12 @@ export default function TransactionsPage() {
       <DataTable columns={columns} data={filteredData} tableName="Transactions" />
     </div>
   );
+}
+
+export default function TransactionsPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <TransactionsComponent />
+        </Suspense>
+    )
 }

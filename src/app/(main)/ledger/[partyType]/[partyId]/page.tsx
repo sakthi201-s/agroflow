@@ -5,8 +5,6 @@ import { DataTable } from '@/components/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
-
-// NOTE: In a real app, you'd fetch this data from a central store or API
 import { transactionData, Transaction } from '@/app/(main)/transactions/page';
 import { customerData } from '@/app/(main)/customers/page';
 import { farmerData } from '@/app/(main)/farmers/page';

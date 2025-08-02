@@ -1,7 +1,8 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { PlusCircle, MoreHorizontal, Filter, ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
 import { DataTable } from '@/components/data-table';
@@ -34,13 +35,15 @@ const initialBillingData: Bill[] = [
 
 type FilterType = 'All' | 'Customer' | 'Organization' | 'Farmer';
 
-export default function BillingPage() {
-    const [activeCompany, setActiveCompany] = useState<'Company 1' | 'Company 2'>('Company 1');
+function BillingComponent() {
+    const searchParams = useSearchParams();
+    const company = searchParams.get('company') || 'Company 1';
+    const activeCompany = company as 'Company 1' | 'Company 2';
+
     const [activeFilter, setActiveFilter] = useState<FilterType>('All');
     const [billingData, setBillingData] = useState<Bill[]>(initialBillingData);
 
     useEffect(() => {
-        // Reset filter when company changes to avoid invalid filter states
         setActiveFilter('All');
     }, [activeCompany]);
 
@@ -128,15 +131,6 @@ export default function BillingPage() {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <h1 className="text-2xl font-bold">Billing System</h1>
             <div className="flex items-center gap-4 ml-auto">
-                <Tabs
-                defaultValue="Company 1"
-                onValueChange={(value) => setActiveCompany(value as 'Company 1' | 'Company 2')}
-                >
-                <TabsList>
-                    <TabsTrigger value="Company 1">Fertilizer & Seeds</TabsTrigger>
-                    <TabsTrigger value="Company 2">Maize Import/Export</TabsTrigger>
-                </TabsList>
-                </Tabs>
                 <Button>
                 <PlusCircle className="mr-2 h-4 w-4" /> Create Bill
                 </Button>
@@ -168,4 +162,12 @@ export default function BillingPage() {
       <DataTable columns={columns} data={filteredData} tableName="Billing"/>
     </div>
   );
+}
+
+export default function BillingPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <BillingComponent />
+        </Suspense>
+    )
 }
