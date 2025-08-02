@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { PlusCircle, MoreHorizontal, Filter, ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
 import { DataTable } from '@/components/data-table';
@@ -37,6 +37,7 @@ type FilterType = 'All' | 'Customer' | 'Organization' | 'Farmer';
 
 function BillingComponent() {
     const searchParams = useSearchParams();
+    const router = useRouter();
     const company = searchParams.get('company') || 'Company 1';
     const activeCompany = company as 'Company 1' | 'Company 2';
 
@@ -46,6 +47,10 @@ function BillingComponent() {
     useEffect(() => {
         setActiveFilter('All');
     }, [activeCompany]);
+    
+    const handleCompanyChange = (company: string) => {
+        router.push(`/billing?company=${company}`);
+    };
 
     const handleStatusChange = (invoiceId: string, status: Bill['status']) => {
         setBillingData(billingData.map(bill => 
@@ -130,9 +135,19 @@ function BillingComponent() {
     <div className="space-y-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <h1 className="text-2xl font-bold">Billing System</h1>
-            <div className="flex items-center gap-4 ml-auto">
+            <div className="flex items-center gap-4">
+                 <Tabs
+                    defaultValue={activeCompany}
+                    onValueChange={handleCompanyChange}
+                    className="transition-all duration-300"
+                >
+                    <TabsList>
+                        <TabsTrigger value="Company 1">Fertilizer & Seeds</TabsTrigger>
+                        <TabsTrigger value="Company 2">Maize Import/Export</TabsTrigger>
+                    </TabsList>
+                </Tabs>
                 <Button>
-                <PlusCircle className="mr-2 h-4 w-4" /> Create Bill
+                    <PlusCircle className="mr-2 h-4 w-4" /> Create Bill
                 </Button>
             </div>
         </div>

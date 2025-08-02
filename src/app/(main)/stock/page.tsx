@@ -1,10 +1,12 @@
+
 'use client';
 
 import { Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
 import { DataTable } from '@/components/data-table';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 type StockItem = {
   id: string;
@@ -36,9 +38,14 @@ const columns = [
 
 function StockComponent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const company = searchParams.get('company') || 'Company 1';
   const activeCompany = company as 'Company 1' | 'Company 2';
   
+  const handleCompanyChange = (company: string) => {
+    router.push(`/stock?company=${company}`);
+  };
+
   const filteredData = stockData.filter(item => item.company === activeCompany);
 
   return (
@@ -46,8 +53,18 @@ function StockComponent() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Stock Management</h1>
          <div className="flex items-center gap-4">
+            <Tabs
+                defaultValue={activeCompany}
+                onValueChange={handleCompanyChange}
+                className="transition-all duration-300"
+            >
+                <TabsList>
+                    <TabsTrigger value="Company 1">Fertilizer & Seeds</TabsTrigger>
+                    <TabsTrigger value="Company 2">Maize Import/Export</TabsTrigger>
+                </TabsList>
+            </Tabs>
             <Button>
-            <PlusCircle className="mr-2 h-4 w-4" /> Add Stock
+              <PlusCircle className="mr-2 h-4 w-4" /> Add Stock
             </Button>
         </div>
       </div>

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -16,16 +17,16 @@ export type Organization = {
 
 export const organizationData: Organization[] = [
   { id: 'ORG001', name: 'Agri Supplies Co.', contactPerson: 'Mark Johnson', phone: '555-0201', email: 'sales@agrisupplies.com', productTypes: 'Fertilizer, Seeds' },
-  { id: 'ORG002', name: 'Crop Growth Solutions', contactPerson: 'Susan Lee', phone: '555-0202', email: 'susan.lee@cgs.com', productTypes: 'Fertilizer' },
-  { id: 'ORG003', name: 'Heritage Seeds Ltd.', contactPerson: 'David Chen', phone: '555-0203', email: 'david.chen@heritageseeds.com', productTypes: 'Seeds' },
-  { id: 'ORG004', name: 'Farm Essentials Inc.', contactPerson: 'Maria Garcia', phone: '555-0204', email: 'maria.g@farmessentials.com', productTypes: 'Fertilizer, Tools' },
+  { id: 'ORG002', name: 'Global Exports Inc.', contactPerson: 'Susan Lee', phone: '555-0202', email: 'susan.lee@globalexports.com', productTypes: 'Maize' },
+  { id: 'ORG003', name: 'Maize Traders LLC', contactPerson: 'David Chen', phone: '555-0203', email: 'david.chen@maizetraders.com', productTypes: 'Maize' },
+  { id: 'ORG004', name: 'Heritage Seeds Ltd.', contactPerson: 'Maria Garcia', phone: '555-0204', email: 'maria.g@heritageseeds.com', productTypes: 'Seeds' },
 ];
 
 export default function OrganizationsPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Organization Management (Suppliers)</h1>
+        <h1 className="text-2xl font-bold">Organization Management</h1>
         <Button>
           <PlusCircle className="mr-2 h-4 w-4" /> Add Organization
         </Button>
