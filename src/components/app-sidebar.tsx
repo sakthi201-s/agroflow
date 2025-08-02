@@ -30,7 +30,6 @@ import {Avatar, AvatarFallback, AvatarImage} from './ui/avatar';
 
 const menuItems = [
   {href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard},
-  {href: '/transactions', label: 'Transactions', icon: Book},
   {href: '/day-book', label: 'Day Book', icon: BookOpen},
   {href: '/stock', label: 'Stock Management', icon: Boxes},
   {href: '/billing', label: 'Billing', icon: Receipt},
