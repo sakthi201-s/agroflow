@@ -59,16 +59,16 @@ const columns = [
   },
 ];
 
-export default function DayBookPage() {
+export default function TransactionsPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Day Book</h1>
+        <h1 className="text-2xl font-bold">Transactions</h1>
         <Button>
           <PlusCircle className="mr-2 h-4 w-4" /> Create Voucher
         </Button>
       </div>
-      <DataTable columns={columns} data={transactionData} tableName="DayBook" />
+      <DataTable columns={columns} data={transactionData} tableName="Transactions" />
     </div>
   );
 }

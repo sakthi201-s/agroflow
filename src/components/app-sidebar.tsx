@@ -29,6 +29,7 @@ import {Avatar, AvatarFallback, AvatarImage} from './ui/avatar';
 const menuItems = [
   {href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard},
   {href: '/day-book', label: 'Day Book', icon: Book},
+  {href: '/transactions', label: 'Transactions', icon: Book},
   {href: '/stock', label: 'Stock Management', icon: Boxes},
   {href: '/billing', label: 'Billing', icon: Receipt},
   {href: '/customers', label: 'Customers', icon: Users},
@@ -57,17 +58,19 @@ export function AppSidebar() {
         <SidebarMenu>
           {menuItems.map((item) => (
             <SidebarMenuItem key={item.href}>
-              <SidebarMenuButton
-                asChild
-                isActive={isActive(item.href)}
-                className={cn(isActive(item.href) && 'bg-primary/10 text-primary hover:bg-primary/20')}
-                tooltip={item.label}
-              >
-                <Link href={item.href}>
-                  <item.icon className="size-5" />
-                  <span>{item.label}</span>
-                </Link>
-              </SidebarMenuButton>
+              <Link href={item.href} legacyBehavior={false} passHref>
+                <SidebarMenuButton
+                  asChild
+                  isActive={isActive(item.href)}
+                  className={cn(isActive(item.href) && 'bg-primary/10 text-primary hover:bg-primary/20')}
+                  tooltip={item.label}
+                >
+                  <div>
+                    <item.icon className="size-5" />
+                    <span>{item.label}</span>
+                  </div>
+                </SidebarMenuButton>
+              </Link>
             </SidebarMenuItem>
           ))}
         </SidebarMenu>
