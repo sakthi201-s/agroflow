@@ -1,6 +1,6 @@
-import {Button} from '@/components/ui/button';
-import {PlusCircle} from 'lucide-react';
-import {DataTable} from '@/components/data-table';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { PlusCircle, Tractor, Phone, MapPin, Wheat, History } from 'lucide-react';
 
 type Farmer = {
   id: string;
@@ -18,15 +18,6 @@ const farmerData: Farmer[] = [
   { id: 'FARM004', name: 'Sophia Nguyen', location: 'South Delta', phone: '555-0304', cropType: 'Mixed Maize', acreage: 300 },
 ];
 
-const columns = [
-  { header: 'Farmer ID', accessorKey: 'id' as keyof Farmer },
-  { header: 'Name', accessorKey: 'name' as keyof Farmer },
-  { header: 'Location', accessorKey: 'location' as keyof Farmer },
-  { header: 'Phone', accessorKey: 'phone' as keyof Farmer },
-  { header: 'Crop Type', accessorKey: 'cropType' as keyof Farmer },
-  { header: 'Acreage', accessorKey: 'acreage' as keyof Farmer },
-];
-
 export default function FarmersPage() {
   return (
     <div className="space-y-6">
@@ -36,7 +27,39 @@ export default function FarmersPage() {
           <PlusCircle className="mr-2 h-4 w-4" /> Add Farmer
         </Button>
       </div>
-      <DataTable columns={columns} data={farmerData} tableName="Farmers"/>
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {farmerData.map((farmer) => (
+          <Card key={farmer.id}>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <Tractor className="h-5 w-5 text-muted-foreground" />
+                    {farmer.name}
+                </CardTitle>
+                <CardDescription>ID: {farmer.id}</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-2 text-sm">
+                <div className="flex items-center gap-2">
+                    <MapPin className="h-4 w-4 text-muted-foreground" />
+                    <span>{farmer.location}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                    <Phone className="h-4 w-4 text-muted-foreground" />
+                    <span>{farmer.phone}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                    <Wheat className="h-4 w-4 text-muted-foreground" />
+                    <span>{farmer.cropType} ({farmer.acreage} acres)</span>
+                </div>
+            </CardContent>
+            <CardFooter>
+              <Button variant="outline" className="w-full">
+                <History className="mr-2 h-4 w-4" />
+                View Ledger
+              </Button>
+            </CardFooter>
+          </Card>
+        ))}
+      </div>
     </div>
   );
 }

@@ -1,6 +1,6 @@
-import {Button} from '@/components/ui/button';
-import {PlusCircle} from 'lucide-react';
-import {DataTable} from '@/components/data-table';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { PlusCircle, User, Phone, Mail, MapPin, History } from 'lucide-react';
 
 type Customer = {
   id: string;
@@ -18,25 +18,52 @@ const customerData: Customer[] = [
   { id: 'CUS004', name: 'Green Valley Gardens', phone: '555-0104', email: 'info@gvgardens.net', address: '321 Orchard Ave, Fruitdale', lastPurchaseDate: '2024-06-10' },
 ];
 
-const columns = [
-  { header: 'Customer ID', accessorKey: 'id' as keyof Customer },
-  { header: 'Name', accessorKey: 'name' as keyof Customer },
-  { header: 'Phone', accessorKey: 'phone' as keyof Customer },
-  { header: 'Email', accessorKey: 'email' as keyof Customer },
-  { header: 'Address', accessorKey: 'address' as keyof Customer },
-  { header: 'Last Purchase', accessorKey: 'lastPurchaseDate' as keyof Customer },
-];
-
 export default function CustomersPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Customer Management (Company 1)</h1>
+        <h1 className="text-2xl font-bold">Customer Management</h1>
         <Button>
           <PlusCircle className="mr-2 h-4 w-4" /> Add Customer
         </Button>
       </div>
-      <DataTable columns={columns} data={customerData} tableName="Customers"/>
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {customerData.map((customer) => (
+          <Card key={customer.id}>
+            <CardHeader>
+              <div className="flex items-start justify-between">
+                <div>
+                    <CardTitle className="flex items-center gap-2">
+                        <User className="h-5 w-5 text-muted-foreground" />
+                        {customer.name}
+                    </CardTitle>
+                    <CardDescription>ID: {customer.id}</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-2 text-sm">
+              <div className="flex items-center gap-2">
+                <Phone className="h-4 w-4 text-muted-foreground" />
+                <span>{customer.phone}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Mail className="h-4 w-4 text-muted-foreground" />
+                <span>{customer.email}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <MapPin className="h-4 w-4 text-muted-foreground" />
+                <span>{customer.address}</span>
+              </div>
+            </CardContent>
+            <CardFooter>
+              <Button variant="outline" className="w-full">
+                <History className="mr-2 h-4 w-4" />
+                View Ledger
+              </Button>
+            </CardFooter>
+          </Card>
+        ))}
+      </div>
     </div>
   );
 }
