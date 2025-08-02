@@ -71,6 +71,9 @@ function TransactionsComponent() {
             </Tabs>
         </div>
       </div>
+      <p className="text-sm text-muted-foreground">
+        This is a read-only view of all financial transactions. Entries are automatically created from other modules like Billing.
+      </p>
       <DataTable columns={columns} data={filteredData} tableName="Transactions" />
     </div>
   );

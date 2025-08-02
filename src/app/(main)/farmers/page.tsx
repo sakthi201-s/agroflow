@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { PlusCircle, Tractor, Phone, MapPin, Wheat, History } from 'lucide-react';
 import Link from 'next/link';
-import { farmerData, type Farmer } from '@/lib/data';
+import { farmerData } from '@/lib/data';
 
 export default function FarmersPage() {
   return (

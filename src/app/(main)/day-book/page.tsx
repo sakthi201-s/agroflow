@@ -6,7 +6,6 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { DataTable } from '@/components/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { PlusCircle } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { initialTransactionData, Transaction } from '@/lib/data';
 
@@ -49,6 +48,9 @@ function DayBookComponent() {
     const company = searchParams.get('company') || 'Company 1';
     const activeCompany = company as 'Company 1' | 'Company 2';
     
+    // In a real app, this data would likely be managed by a global state manager (like Redux or Zustand)
+    // or fetched from an API, and the billing page would trigger a refetch or update the global state.
+    // For this prototype, we'll just use the initial static data.
     const [transactionData, setTransactionData] = useState<Transaction[]>(initialTransactionData);
 
     const handleCompanyChange = (company: string) => {
@@ -73,6 +75,9 @@ function DayBookComponent() {
             </Tabs>
         </div>
       </div>
+      <p className="text-sm text-muted-foreground">
+        This is a read-only view of all financial transactions. Entries are automatically created from other modules like Billing.
+      </p>
       <DataTable columns={columns} data={filteredData} tableName="DayBook" />
     </div>
   );

@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { PlusCircle, User, Phone, Mail, MapPin, History } from 'lucide-react';
 import Link from 'next/link';
-import { customerData, type Customer } from '@/lib/data';
+import { customerData } from '@/lib/data';
 
 export default function CustomersPage() {
   return (

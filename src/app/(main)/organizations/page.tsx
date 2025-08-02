@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { PlusCircle, Building, User, Phone, Mail, History, Package } from 'lucide-react';
 import Link from 'next/link';
-import { organizationData, type Organization } from '@/lib/data';
+import { organizationData } from '@/lib/data';
 
 export default function OrganizationsPage() {
   return (

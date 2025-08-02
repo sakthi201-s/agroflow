@@ -9,29 +9,8 @@ import { DataTable } from '@/components/data-table';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
-
-type Bill = {
-  invoiceId: string;
-  customer: string;
-  counterpartyType: 'Customer' | 'Organization' | 'Farmer';
-  billType: 'Receivable' | 'Payable';
-  company: 'Company 1' | 'Company 2';
-  amount: string;
-  dueDate: string;
-  status: 'Paid' | 'Pending' | 'Overdue';
-};
-
-const initialBillingData: Bill[] = [
-    { invoiceId: 'INV-2024001', customer: 'John Doe Farms', counterpartyType: 'Customer', billType: 'Receivable', company: 'Company 1', amount: '$1,250.00', dueDate: '2024-07-30', status: 'Paid' },
-    { invoiceId: 'BILL-001', customer: 'Agri Supplies Co.', counterpartyType: 'Organization', billType: 'Payable', company: 'Company 1', amount: '$3,500.00', dueDate: '2024-08-20', status: 'Pending' },
-    { invoiceId: 'INV-2024002', customer: 'Global Exports Inc.', counterpartyType: 'Organization', billType: 'Receivable', company: 'Company 2', amount: '$15,000.00', dueDate: '2024-08-15', status: 'Pending' },
-    { invoiceId: 'BILL-002', customer: 'Samuel Miller', counterpartyType: 'Farmer', billType: 'Payable', company: 'Company 2', amount: '$4,000.00', dueDate: '2024-08-10', status: 'Paid' },
-    { invoiceId: 'INV-2024003', customer: 'Agri Supplies Co.', counterpartyType: 'Organization', billType: 'Receivable', company: 'Company 1', amount: '$800.50', dueDate: '2024-06-20', status: 'Overdue' },
-    { invoiceId: 'INV-2024004', customer: 'Jane Smith Fields', counterpartyType: 'Customer', billType: 'Receivable', company: 'Company 1', amount: '$3,500.00', dueDate: '2024-08-05', status: 'Pending' },
-    { invoiceId: 'INV-2024005', customer: 'Maize Traders LLC', counterpartyType: 'Organization', billType: 'Receivable', company: 'Company 2', amount: '$22,300.00', dueDate: '2024-07-25', status: 'Paid' },
-    { invoiceId: 'INV-2024006', customer: 'Local Coop', counterpartyType: 'Customer', billType: 'Receivable', company: 'Company 1', amount: '$550.00', dueDate: '2024-08-20', status: 'Pending' },
-    { invoiceId: 'BILL-003', customer: 'Isabella Garcia', counterpartyType: 'Farmer', billType: 'Payable', company: 'Company 2', amount: '$6,300.00', dueDate: '2024-08-25', status: 'Pending' },
-];
+import { CreateBillForm } from './components/create-bill-form';
+import { initialBillingData, initialTransactionData, Bill, Transaction } from '@/lib/data';
 
 type FilterType = 'All' | 'Customer' | 'Organization' | 'Farmer';
 
@@ -43,6 +22,8 @@ function BillingComponent() {
 
     const [activeFilter, setActiveFilter] = useState<FilterType>('All');
     const [billingData, setBillingData] = useState<Bill[]>(initialBillingData);
+    const [transactionData, setTransactionData] = useState<Transaction[]>(initialTransactionData);
+    const [isCreateBillOpen, setCreateBillOpen] = useState(false);
 
     useEffect(() => {
         setActiveFilter('All');
@@ -56,6 +37,11 @@ function BillingComponent() {
         setBillingData(billingData.map(bill => 
             bill.invoiceId === invoiceId ? { ...bill, status } : bill
         ));
+    };
+
+    const handleBillCreated = (newBill: Bill, newTransaction: Transaction) => {
+        setBillingData(prev => [...prev, newBill]);
+        setTransactionData(prev => [...prev, newTransaction]);
     };
 
     const columns = [
@@ -132,6 +118,13 @@ function BillingComponent() {
         .filter(item => activeFilter === 'All' || item.counterpartyType === activeFilter);
 
   return (
+    <>
+    <CreateBillForm 
+        isOpen={isCreateBillOpen} 
+        onOpenChange={setCreateBillOpen}
+        onBillCreated={handleBillCreated}
+        activeCompany={activeCompany}
+    />
     <div className="space-y-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <h1 className="text-2xl font-bold">Billing System</h1>
@@ -146,7 +139,7 @@ function BillingComponent() {
                         <TabsTrigger value="Company 2">Maize Import/Export</TabsTrigger>
                     </TabsList>
                 </Tabs>
-                <Button>
+                <Button onClick={() => setCreateBillOpen(true)}>
                     <PlusCircle className="mr-2 h-4 w-4" /> Create Bill
                 </Button>
             </div>
@@ -176,6 +169,7 @@ function BillingComponent() {
         </div>
       <DataTable columns={columns} data={filteredData} tableName="Billing"/>
     </div>
+    </>
   );
 }
 
