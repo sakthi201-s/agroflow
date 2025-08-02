@@ -44,6 +44,8 @@ export function CreateStockItemForm({ isOpen, onOpenChange, onStockItemCreated, 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      productName: '',
+      location: '',
       quantity: 0,
     },
   });

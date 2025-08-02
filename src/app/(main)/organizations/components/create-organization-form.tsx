@@ -42,6 +42,13 @@ type CreateOrganizationFormProps = {
 export function CreateOrganizationForm({ isOpen, onOpenChange, onOrganizationCreated }: CreateOrganizationFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: '',
+      contactPerson: '',
+      phone: '',
+      email: '',
+      productTypes: '',
+    },
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {

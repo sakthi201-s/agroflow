@@ -42,6 +42,10 @@ export function CreateFarmerForm({ isOpen, onOpenChange, onFarmerCreated }: Crea
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      name: '',
+      location: '',
+      phone: '',
+      cropType: '',
       acreage: 1,
     }
   });
