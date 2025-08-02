@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { PlusCircle, MoreHorizontal, Filter } from 'lucide-react';
+import { PlusCircle, MoreHorizontal, Filter, ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
 import { DataTable } from '@/components/data-table';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -13,6 +13,7 @@ type Bill = {
   invoiceId: string;
   customer: string;
   counterpartyType: 'Customer' | 'Organization' | 'Farmer';
+  billType: 'Receivable' | 'Payable';
   company: 'Company 1' | 'Company 2';
   amount: string;
   dueDate: string;
@@ -20,14 +21,15 @@ type Bill = {
 };
 
 const initialBillingData: Bill[] = [
-    { invoiceId: 'INV-2024001', customer: 'John Doe Farms', counterpartyType: 'Customer', company: 'Company 1', amount: '$1,250.00', dueDate: '2024-07-30', status: 'Paid' },
-    { invoiceId: 'INV-2024002', customer: 'Global Exports Inc.', counterpartyType: 'Organization', company: 'Company 2', amount: '$15,000.00', dueDate: '2024-08-15', status: 'Pending' },
-    { invoiceId: 'INV-2024003', customer: 'Agri Supplies Co.', counterpartyType: 'Organization', company: 'Company 1', amount: '$800.50', dueDate: '2024-06-20', status: 'Overdue' },
-    { invoiceId: 'INV-2024004', customer: 'Jane Smith Fields', counterpartyType: 'Customer', company: 'Company 1', amount: '$3,500.00', dueDate: '2024-08-05', status: 'Pending' },
-    { invoiceId: 'INV-2024005', customer: 'Maize Traders LLC', counterpartyType: 'Organization', company: 'Company 2', amount: '$22,300.00', dueDate: '2024-07-25', status: 'Paid' },
-    { invoiceId: 'INV-2024006', customer: 'Local Coop', counterpartyType: 'Customer', company: 'Company 1', amount: '$550.00', dueDate: '2024-08-20', status: 'Pending' },
-    { invoiceId: 'INV-2024007', customer: 'Samuel Miller', counterpartyType: 'Farmer', company: 'Company 2', amount: '$4,000.00', dueDate: '2024-08-10', status: 'Paid' },
-    { invoiceId: 'INV-2024008', customer: 'Isabella Garcia', counterpartyType: 'Farmer', company: 'Company 2', amount: '$6,300.00', dueDate: '2024-08-25', status: 'Pending' },
+    { invoiceId: 'INV-2024001', customer: 'John Doe Farms', counterpartyType: 'Customer', billType: 'Receivable', company: 'Company 1', amount: '$1,250.00', dueDate: '2024-07-30', status: 'Paid' },
+    { invoiceId: 'BILL-001', customer: 'Agri Supplies Co.', counterpartyType: 'Organization', billType: 'Payable', company: 'Company 1', amount: '$3,500.00', dueDate: '2024-08-20', status: 'Pending' },
+    { invoiceId: 'INV-2024002', customer: 'Global Exports Inc.', counterpartyType: 'Organization', billType: 'Receivable', company: 'Company 2', amount: '$15,000.00', dueDate: '2024-08-15', status: 'Pending' },
+    { invoiceId: 'BILL-002', customer: 'Samuel Miller', counterpartyType: 'Farmer', billType: 'Payable', company: 'Company 2', amount: '$4,000.00', dueDate: '2024-08-10', status: 'Paid' },
+    { invoiceId: 'INV-2024003', customer: 'Agri Supplies Co.', counterpartyType: 'Organization', billType: 'Receivable', company: 'Company 1', amount: '$800.50', dueDate: '2024-06-20', status: 'Overdue' },
+    { invoiceId: 'INV-2024004', customer: 'Jane Smith Fields', counterpartyType: 'Customer', billType: 'Receivable', company: 'Company 1', amount: '$3,500.00', dueDate: '2024-08-05', status: 'Pending' },
+    { invoiceId: 'INV-2024005', customer: 'Maize Traders LLC', counterpartyType: 'Organization', billType: 'Receivable', company: 'Company 2', amount: '$22,300.00', dueDate: '2024-07-25', status: 'Paid' },
+    { invoiceId: 'INV-2024006', customer: 'Local Coop', counterpartyType: 'Customer', billType: 'Receivable', company: 'Company 1', amount: '$550.00', dueDate: '2024-08-20', status: 'Pending' },
+    { invoiceId: 'BILL-003', customer: 'Isabella Garcia', counterpartyType: 'Farmer', billType: 'Payable', company: 'Company 2', amount: '$6,300.00', dueDate: '2024-08-25', status: 'Pending' },
 ];
 
 type FilterType = 'All' | 'Customer' | 'Organization' | 'Farmer';
@@ -49,7 +51,23 @@ export default function BillingPage() {
     };
 
     const columns = [
-      { header: 'Invoice ID', accessorKey: 'invoiceId' as keyof Bill },
+      { header: 'ID', accessorKey: 'invoiceId' as keyof Bill },
+      { 
+        header: 'Bill Type', 
+        accessorKey: 'billType' as keyof Bill,
+        cell: ({ getValue }: { getValue: () => Bill['billType'] }) => {
+          const type = getValue();
+          const isReceivable = type === 'Receivable';
+          const className = isReceivable ? 'bg-blue-500/20 text-blue-700' : 'bg-orange-500/20 text-orange-700';
+          const Icon = isReceivable ? ArrowDownCircle : ArrowUpCircle;
+          return (
+            <Badge variant="outline" className={className}>
+              <Icon className="mr-1 h-3 w-3" />
+              {type}
+            </Badge>
+          );
+        }
+      },
       { header: 'Counterparty', accessorKey: 'customer' as keyof Bill },
       { 
         header: 'Type', 
@@ -59,7 +77,6 @@ export default function BillingPage() {
           return <Badge variant="outline">{type}</Badge>;
         }
       },
-      { header: 'Company', accessorKey: 'company' as keyof Bill },
       { header: 'Amount', accessorKey: 'amount' as keyof Bill },
       { header: 'Due Date', accessorKey: 'dueDate' as keyof Bill },
       { 
