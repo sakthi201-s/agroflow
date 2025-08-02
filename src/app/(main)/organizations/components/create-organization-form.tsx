@@ -27,7 +27,7 @@ import { Textarea } from '@/components/ui/textarea';
 
 const formSchema = z.object({
   name: z.string().min(2, 'Organization name must be at least 2 characters.'),
-  contactPerson: z.string().min(2, 'Contact person name must be at least 2 characters.'),
+  contactPerson: z.string().optional(),
   phone: z.string().min(10, 'Please enter a valid phone number.'),
   email: z.string().email('Please enter a valid email address.'),
   productTypes: z.string().min(3, 'Please specify product types.'),
@@ -54,7 +54,11 @@ export function CreateOrganizationForm({ isOpen, onOpenChange, onOrganizationCre
   function onSubmit(values: z.infer<typeof formSchema>) {
     const newOrganization: Organization = {
       id: `ORG-${Date.now().toString().slice(-4)}`,
-      ...values,
+      name: values.name,
+      contactPerson: values.contactPerson || '',
+      phone: values.phone,
+      email: values.email,
+      productTypes: values.productTypes,
     };
     
     onOrganizationCreated(newOrganization);
@@ -91,7 +95,7 @@ export function CreateOrganizationForm({ isOpen, onOpenChange, onOrganizationCre
               name="contactPerson"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Contact Person</FormLabel>
+                  <FormLabel>Contact Person (Optional)</FormLabel>
                   <FormControl>
                     <Input placeholder="e.g., Mark Johnson" {...field} />
                   </FormControl>
