@@ -1,18 +1,59 @@
 
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { PlusCircle, MoreHorizontal, Filter, ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
+import { PlusCircle, MoreHorizontal, Filter, ArrowUpCircle, ArrowDownCircle, Printer } from 'lucide-react';
 import { DataTable } from '@/components/data-table';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import { CreateBillForm } from './components/create-bill-form';
 import { initialBillingData, initialTransactionData, Bill, Transaction } from '@/lib/data';
+import { useReactToPrint } from 'react-to-print';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 
 type FilterType = 'All' | 'Customer' | 'Organization' | 'Farmer';
+
+const PrintableBill = React.forwardRef<HTMLDivElement, { bill: Bill }>(({ bill }, ref) => {
+    return (
+        <div ref={ref} className="p-8">
+             <DialogHeader>
+                <DialogTitle>Invoice: {bill.invoiceId}</DialogTitle>
+                <DialogDescription>
+                    Date: {new Date().toLocaleDateString()} | Due: {bill.dueDate}
+                    <p>Bill To: {bill.customer}</p>
+                </DialogDescription>
+            </DialogHeader>
+            <div className="mt-4 space-y-4">
+                <div className="grid grid-cols-4 font-semibold border-b pb-2">
+                    <div>Product</div>
+                    <div className="text-right">Quantity</div>
+                    <div className="text-right">Price/Unit</div>
+                    <div className="text-right">Total</div>
+                </div>
+                {bill.items.map((item, index) => (
+                    <div key={index} className="grid grid-cols-4 items-center">
+                        <div>
+                            <p className="font-medium">{item.productName}</p>
+                            <p className="text-xs text-muted-foreground">{item.unit}</p>
+                        </div>
+                        <div className="text-right">{item.quantity}</div>
+                        <div className="text-right">${item.price.toFixed(2)}</div>
+                        <div className="text-right font-medium">${(item.quantity * item.price).toFixed(2)}</div>
+                    </div>
+                ))}
+                 <div className="grid grid-cols-4 font-bold border-t pt-2 mt-4">
+                    <div className="col-span-3 text-right">Grand Total</div>
+                    <div className="text-right">${bill.totalAmount.toFixed(2)}</div>
+                </div>
+            </div>
+        </div>
+    )
+});
+PrintableBill.displayName = 'PrintableBill';
+
 
 function BillingComponent() {
     const searchParams = useSearchParams();
@@ -24,6 +65,13 @@ function BillingComponent() {
     const [billingData, setBillingData] = useState<Bill[]>(initialBillingData);
     const [transactionData, setTransactionData] = useState<Transaction[]>(initialTransactionData);
     const [isCreateBillOpen, setCreateBillOpen] = useState(false);
+    const [lastCreatedBill, setLastCreatedBill] = useState<Bill | null>(null);
+
+    const printRef = useRef<HTMLDivElement>(null);
+    const handlePrint = useReactToPrint({
+        content: () => printRef.current,
+        documentTitle: `Bill_${lastCreatedBill?.invoiceId}`,
+    });
 
     useEffect(() => {
         setActiveFilter('All');
@@ -40,13 +88,25 @@ function BillingComponent() {
     };
 
     const handleBillCreated = (newBill: Bill, newTransaction: Transaction) => {
-        setBillingData(prev => [...prev, newBill]);
+        // Don't add to list yet, wait for user to set status
+        setLastCreatedBill(newBill);
+        // We still create the transaction immediately
         setTransactionData(prev => [...prev, newTransaction]);
-        // Note: In a real app, this should update a central data store
-        // and other pages would react. For now, we update local state.
-        // To see the new transaction in the Day Book, a refresh might be needed
-        // until a proper state management solution is in place.
+        setCreateBillOpen(false); // Close the form dialog
     };
+
+    const finalizeBill = (status: 'Paid' | 'Pending') => {
+        if (!lastCreatedBill) return;
+        
+        const finalBill = { ...lastCreatedBill, status };
+        setBillingData(prev => [...prev, finalBill]);
+
+        if (status === 'Paid') {
+            // Potentially update transaction status or create payment record here in a real app
+        }
+        
+        setLastCreatedBill(null); // Close the confirmation dialog
+    }
 
     const columns = [
       { header: 'ID', accessorKey: 'invoiceId' as keyof Bill },
@@ -127,12 +187,47 @@ function BillingComponent() {
 
   return (
     <>
+    <div style={{ display: "none" }}>
+        {lastCreatedBill && <PrintableBill bill={lastCreatedBill} ref={printRef} />}
+    </div>
+
     <CreateBillForm 
         isOpen={isCreateBillOpen} 
         onOpenChange={setCreateBillOpen}
         onBillCreated={handleBillCreated}
         activeCompany={activeCompany}
     />
+
+    <Dialog open={!!lastCreatedBill} onOpenChange={() => setLastCreatedBill(null)}>
+        <DialogContent className="max-w-2xl">
+            {lastCreatedBill && (
+                <>
+                <div className="p-4">
+                    <DialogHeader>
+                        <DialogTitle>Bill Created Successfully!</DialogTitle>
+                        <DialogDescription>
+                            What would you like to do next?
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="mt-4 border rounded-lg p-4">
+                        <h3 className="font-semibold text-lg">{lastCreatedBill.invoiceId}</h3>
+                        <p>To: {lastCreatedBill.customer}</p>
+                        <p>Amount: ${lastCreatedBill.totalAmount.toFixed(2)}</p>
+                        <p>Due: {lastCreatedBill.dueDate}</p>
+                    </div>
+                </div>
+                <DialogFooter className="flex-col sm:flex-row gap-2 p-4">
+                    <Button variant="outline" onClick={handlePrint}><Printer className="mr-2 h-4 w-4"/> Print</Button>
+                    <div className="flex-grow" />
+                    <Button variant="secondary" onClick={() => finalizeBill('Pending')}>Leave as Pending</Button>
+                    <Button onClick={() => finalizeBill('Paid')}>Mark as Paid</Button>
+                </DialogFooter>
+                </>
+            )}
+        </DialogContent>
+    </Dialog>
+
+
     <div className="space-y-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <h1 className="text-2xl font-bold">Billing System</h1>
@@ -157,7 +252,7 @@ function BillingComponent() {
             <Filter className="h-5 w-5 text-muted-foreground" />
             <Tabs
                 value={activeFilter}
-                onValueChange={(value) => setActiveFilter(value as FilterType)}
+                onValueValueChange={(value) => setActiveFilter(value as FilterType)}
             >
                 <TabsList>
                     <TabsTrigger value="All">All</TabsTrigger>
@@ -188,5 +283,3 @@ export default function BillingPage() {
         </Suspense>
     )
 }
-
-    
