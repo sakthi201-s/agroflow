@@ -59,9 +59,9 @@ const columns = (onViewDetails: (transaction: Transaction) => void) => [
 
 const PrintableVoucher = React.forwardRef<HTMLDivElement, { transaction: Transaction }>(({ transaction }, ref) => {
     return (
-        <div ref={ref} className="p-4">
+        <div ref={ref} className="p-8">
              <DialogHeader>
-                <DialogTitle>Transaction Details: {transaction.id}</DialogTitle>
+                <DialogTitle>Transaction Voucher: {transaction.id}</DialogTitle>
                 <DialogDescription>
                     Date: {transaction.date} | Party: {transaction.counterparty}
                 </DialogDescription>
@@ -84,7 +84,7 @@ const PrintableVoucher = React.forwardRef<HTMLDivElement, { transaction: Transac
                         <div className="text-right font-medium">${(item.quantity * item.price).toFixed(2)}</div>
                     </div>
                 ))}
-                 <div className="grid grid-cols-4 font-bold border-t pt-2">
+                 <div className="grid grid-cols-4 font-bold border-t pt-2 mt-4">
                     <div className="col-span-3 text-right">Grand Total</div>
                     <div className="text-right">${transaction.totalAmount.toFixed(2)}</div>
                 </div>
@@ -143,11 +143,45 @@ function TransactionsComponent() {
             </p>
             <DataTable columns={columns(handleViewDetails)} data={filteredData} tableName="Transactions" />
 
+            <div style={{ display: "none" }}>
+              {selectedTransaction && <PrintableVoucher transaction={selectedTransaction} ref={printRef} />}
+            </div>
+
             <Dialog open={!!selectedTransaction} onOpenChange={(isOpen) => !isOpen && setSelectedTransaction(null)}>
                 <DialogContent className="max-w-2xl">
                     {selectedTransaction && (
                        <>
-                           <PrintableVoucher transaction={selectedTransaction} ref={printRef} />
+                           <div className="p-4">
+                               <DialogHeader>
+                                  <DialogTitle>Transaction Details: {selectedTransaction.id}</DialogTitle>
+                                  <DialogDescription>
+                                      Date: {selectedTransaction.date} | Party: {selectedTransaction.counterparty}
+                                  </DialogDescription>
+                              </DialogHeader>
+                              <div className="mt-4 space-y-4">
+                                  <div className="grid grid-cols-4 font-semibold border-b pb-2">
+                                      <div>Product</div>
+                                      <div className="text-right">Quantity</div>
+                                      <div className="text-right">Price/Unit</div>
+                                      <div className="text-right">Total</div>
+                                  </div>
+                                  {selectedTransaction.items.map((item, index) => (
+                                      <div key={index} className="grid grid-cols-4 items-center">
+                                          <div>
+                                              <p className="font-medium">{item.productName}</p>
+                                              <p className="text-xs text-muted-foreground">{item.unit}</p>
+                                          </div>
+                                          <div className="text-right">{item.quantity}</div>
+                                          <div className="text-right">${item.price.toFixed(2)}</div>
+                                          <div className="text-right font-medium">${(item.quantity * item.price).toFixed(2)}</div>
+                                      </div>
+                                  ))}
+                                   <div className="grid grid-cols-4 font-bold border-t pt-2 mt-4">
+                                      <div className="col-span-3 text-right">Grand Total</div>
+                                      <div className="text-right">${selectedTransaction.totalAmount.toFixed(2)}</div>
+                                  </div>
+                              </div>
+                           </div>
                            <DialogFooter className="mt-6">
                                 <Button onClick={handlePrint}><Printer className="mr-2 h-4 w-4" /> Print</Button>
                            </DialogFooter>
