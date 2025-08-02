@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, Suspense, useRef } from 'react';
+import React, { useState, useEffect, Suspense, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { PlusCircle, MoreHorizontal, Filter, ArrowUpCircle, ArrowDownCircle, Printer } from 'lucide-react';
