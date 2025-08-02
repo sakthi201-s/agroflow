@@ -11,18 +11,25 @@ import {
 import {Button} from './ui/button';
 import {Download} from 'lucide-react';
 import {exportToCsv} from '@/lib/csv';
+import React from 'react';
 
-interface DataTableProps<TData, TValue> {
-  columns: {header: string; accessorKey: keyof TData}[];
+type Column<TData> = {
+  header: string;
+  accessorKey: keyof TData;
+  cell?: (props: { getValue: () => any }) => React.ReactNode;
+};
+
+interface DataTableProps<TData> {
+  columns: Column<TData>[];
   data: TData[];
   tableName: string;
 }
 
-export function DataTable<TData, TValue>({
+export function DataTable<TData>({
   columns,
   data,
   tableName
-}: DataTableProps<TData, TValue>) {
+}: DataTableProps<TData>) {
   return (
     <div className="space-y-4">
        <div className="flex justify-end">
@@ -49,7 +56,9 @@ export function DataTable<TData, TValue>({
                 <TableRow key={rowIndex}>
                   {columns.map((column, colIndex) => (
                     <TableCell key={colIndex}>
-                      {String(row[column.accessorKey])}
+                      {column.cell
+                        ? column.cell({ getValue: () => row[column.accessorKey] })
+                        : String(row[column.accessorKey])}
                     </TableCell>
                   ))}
                 </TableRow>

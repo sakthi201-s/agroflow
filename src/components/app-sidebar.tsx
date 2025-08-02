@@ -9,6 +9,7 @@ import {
   Users,
   BrainCircuit,
   Package,
+  ArrowRightLeft,
 } from 'lucide-react';
 import Link from 'next/link';
 import {usePathname} from 'next/navigation';
@@ -28,6 +29,7 @@ import { Button } from './ui/button';
 
 const menuItems = [
   {href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard},
+  {href: '/transactions', label: 'Transactions', icon: ArrowRightLeft},
   {href: '/stock', label: 'Stock Management', icon: Boxes},
   {href: '/billing', label: 'Billing', icon: Receipt},
   {href: '/customers', label: 'Customers', icon: Users},
