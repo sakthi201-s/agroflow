@@ -1,8 +1,11 @@
+'use client';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { PlusCircle, Tractor, Phone, MapPin, Wheat, History } from 'lucide-react';
+import Link from 'next/link';
 
-type Farmer = {
+export type Farmer = {
   id: string;
   name: string;
   location: string;
@@ -11,7 +14,7 @@ type Farmer = {
   acreage: number;
 };
 
-const farmerData: Farmer[] = [
+export const farmerData: Farmer[] = [
   { id: 'FARM001', name: 'Samuel Miller', location: 'West Valley', phone: '555-0301', cropType: 'Yellow Maize', acreage: 150 },
   { id: 'FARM002', name: 'Isabella Garcia', location: 'East Ridge', phone: '555-0302', cropType: 'White Maize', acreage: 200 },
   { id: 'FARM003', name: 'William Brown', location: 'North Plains', phone: '555-0303', cropType: 'Yellow Maize', acreage: 120 },
@@ -52,10 +55,12 @@ export default function FarmersPage() {
                 </div>
             </CardContent>
             <CardFooter>
-              <Button variant="outline" className="w-full">
-                <History className="mr-2 h-4 w-4" />
-                View Ledger
-              </Button>
+                <Button asChild variant="outline" className="w-full">
+                    <Link href={`/ledger/farmer/${farmer.id}`}>
+                        <History className="mr-2 h-4 w-4" />
+                        View Ledger
+                    </Link>
+                </Button>
             </CardFooter>
           </Card>
         ))}

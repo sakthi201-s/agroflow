@@ -1,8 +1,11 @@
+'use client';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { PlusCircle, User, Phone, Mail, MapPin, History } from 'lucide-react';
+import Link from 'next/link';
 
-type Customer = {
+export type Customer = {
   id: string;
   name: string;
   phone: string;
@@ -11,7 +14,7 @@ type Customer = {
   lastPurchaseDate: string;
 };
 
-const customerData: Customer[] = [
+export const customerData: Customer[] = [
   { id: 'CUS001', name: 'John Doe Farms', phone: '555-0101', email: 'john.doe@example.com', address: '123 Farm Rd, Rural Town', lastPurchaseDate: '2024-05-15' },
   { id: 'CUS002', name: 'Jane Smith Fields', phone: '555-0102', email: 'jane.smith@example.com', address: '456 Meadow Ln, Greenfield', lastPurchaseDate: '2024-06-01' },
   { id: 'CUS003', name: 'Local Coop', phone: '555-0103', email: 'contact@localcoop.com', address: '789 Market St, Cityville', lastPurchaseDate: '2024-05-28' },
@@ -56,10 +59,12 @@ export default function CustomersPage() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button variant="outline" className="w-full">
-                <History className="mr-2 h-4 w-4" />
-                View Ledger
-              </Button>
+                <Button asChild variant="outline" className="w-full">
+                    <Link href={`/ledger/customer/${customer.id}`}>
+                        <History className="mr-2 h-4 w-4" />
+                        View Ledger
+                    </Link>
+                </Button>
             </CardFooter>
           </Card>
         ))}

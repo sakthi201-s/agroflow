@@ -1,8 +1,11 @@
+'use client';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { PlusCircle, Building, User, Phone, Mail, History, Package } from 'lucide-react';
+import Link from 'next/link';
 
-type Organization = {
+export type Organization = {
   id: string;
   name: string;
   contactPerson: string;
@@ -11,7 +14,7 @@ type Organization = {
   productTypes: string;
 };
 
-const organizationData: Organization[] = [
+export const organizationData: Organization[] = [
   { id: 'ORG001', name: 'Agri Supplies Co.', contactPerson: 'Mark Johnson', phone: '555-0201', email: 'sales@agrisupplies.com', productTypes: 'Fertilizer, Seeds' },
   { id: 'ORG002', name: 'Crop Growth Solutions', contactPerson: 'Susan Lee', phone: '555-0202', email: 'susan.lee@cgs.com', productTypes: 'Fertilizer' },
   { id: 'ORG003', name: 'Heritage Seeds Ltd.', contactPerson: 'David Chen', phone: '555-0203', email: 'david.chen@heritageseeds.com', productTypes: 'Seeds' },
@@ -56,10 +59,12 @@ export default function OrganizationsPage() {
                 </div>
             </CardContent>
             <CardFooter>
-              <Button variant="outline" className="w-full">
-                <History className="mr-2 h-4 w-4" />
-                View Ledger
-              </Button>
+                <Button asChild variant="outline" className="w-full">
+                    <Link href={`/ledger/organization/${org.id}`}>
+                        <History className="mr-2 h-4 w-4" />
+                        View Ledger
+                    </Link>
+                </Button>
             </CardFooter>
           </Card>
         ))}
