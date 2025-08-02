@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
 
-type Transaction = {
+export type Transaction = {
   id: string;
   date: string;
   type: 'Sale' | 'Purchase';
@@ -17,7 +17,7 @@ type Transaction = {
   amount: string;
 };
 
-const transactionData: Transaction[] = [
+export const transactionData: Transaction[] = [
   { id: 'TRN001', date: '2024-07-15', type: 'Sale', counterparty: 'John Doe Farms', counterpartyType: 'Customer', productName: 'Urea Fertilizer', quantity: 50, unit: 'bags', amount: '$1,250.00' },
   { id: 'TRN002', date: '2024-07-14', type: 'Purchase', counterparty: 'Samuel Miller', counterpartyType: 'Farmer', productName: 'Yellow Maize', quantity: 20, unit: 'ton', amount: '$4,000.00' },
   { id: 'TRN003', date: '2024-07-12', type: 'Purchase', counterparty: 'Agri Supplies Co.', counterpartyType: 'Organization', productName: 'DAP Fertilizer', quantity: 100, unit: 'bags', amount: '$3,500.00' },

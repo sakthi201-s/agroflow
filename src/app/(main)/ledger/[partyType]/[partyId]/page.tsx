@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 
 // NOTE: In a real app, you'd fetch this data from a central store or API
-import { transactionData, Transaction } from '@/app/(main)/day-book/page';
+import { transactionData, Transaction } from '@/app/(main)/transactions/page';
 import { customerData } from '@/app/(main)/customers/page';
 import { farmerData } from '@/app/(main)/farmers/page';
 import { organizationData } from '@/app/(main)/organizations/page';
@@ -47,13 +47,12 @@ export default function LedgerPage() {
   const getPartyName = () => {
     let party;
     if (partyType === 'customer') {
-      party = customerData.find(c => `CUS${String(c.id).padStart(3, '0')}` === partyId);
+      party = customerData.find(c => c.id === partyId);
     } else if (partyType === 'farmer') {
-      party = farmerData.find(f => `FARM${String(f.id).padStart(3, '0')}` === partyId);
+      party = farmerData.find(f => f.id === partyId);
     } else if (partyType === 'organization') {
-      party = organizationData.find(o => `ORG${String(o.id).padStart(3, '0')}` === partyId);
+      party = organizationData.find(o => o.id === partyId);
     }
-    // A bit of a hack to match names since IDs aren't in the transaction data
     return party?.name || 'Unknown';
   };
   
