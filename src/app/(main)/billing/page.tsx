@@ -19,13 +19,13 @@ type FilterType = 'All' | 'Customer' | 'Organization' | 'Farmer';
 const PrintableBill = React.forwardRef<HTMLDivElement, { bill: Bill }>(({ bill }, ref) => {
     return (
         <div ref={ref} className="p-8">
-             <DialogHeader>
-                <DialogTitle>Invoice: {bill.invoiceId}</DialogTitle>
-                <DialogDescription>
-                    Date: {new Date().toLocaleDateString()} | Due: {bill.dueDate}
+             <div className="mb-4">
+                <h2 className="text-2xl font-bold">Invoice: {bill.invoiceId}</h2>
+                <div className="text-muted-foreground">
+                    <p>Date: {new Date().toLocaleDateString()} | Due: {bill.dueDate}</p>
                     <p>Bill To: {bill.customer}</p>
-                </DialogDescription>
-            </DialogHeader>
+                </div>
+            </div>
             <div className="mt-4 space-y-4">
                 <div className="grid grid-cols-4 font-semibold border-b pb-2">
                     <div>Product</div>
