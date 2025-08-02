@@ -252,7 +252,7 @@ function BillingComponent() {
             <Filter className="h-5 w-5 text-muted-foreground" />
             <Tabs
                 value={activeFilter}
-                onValueValueChange={(value) => setActiveFilter(value as FilterType)}
+                onValueChange={(value) => setActiveFilter(value as FilterType)}
             >
                 <TabsList>
                     <TabsTrigger value="All">All</TabsTrigger>
