@@ -1,37 +1,14 @@
 
 'use client';
 
-import { Suspense } from 'react';
+import { Suspense, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { DataTable } from '@/components/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-
-export type Transaction = {
-  id: string;
-  date: string;
-  type: 'Sale' | 'Purchase';
-  company: 'Company 1' | 'Company 2';
-  counterparty: string;
-  counterpartyType: 'Customer' | 'Farmer' | 'Organization';
-  productName: string;
-  quantity: number;
-  unit: 'kg' | 'ton' | 'bags';
-  amount: string;
-};
-
-export const transactionData: Transaction[] = [
-  { id: 'TRN001', date: '2024-07-15', type: 'Sale', company: 'Company 1', counterparty: 'John Doe Farms', counterpartyType: 'Customer', productName: 'Urea Fertilizer', quantity: 50, unit: 'bags', amount: '$1,250.00' },
-  { id: 'TRN002', date: '2024-07-14', type: 'Purchase', company: 'Company 2', counterparty: 'Samuel Miller', counterpartyType: 'Farmer', productName: 'Yellow Maize', quantity: 20, unit: 'ton', amount: '$4,000.00' },
-  { id: 'TRN003', date: '2024-07-12', type: 'Purchase', company: 'Company 1', counterparty: 'Agri Supplies Co.', counterpartyType: 'Organization', productName: 'DAP Fertilizer', quantity: 100, unit: 'bags', amount: '$3,500.00' },
-  { id: 'TRN004', date: '2024-07-11', type: 'Sale', company: 'Company 1', counterparty: 'Jane Smith Fields', counterpartyType: 'Customer', productName: 'Hybrid Maize Seeds', quantity: 10, unit: 'bags', amount: '$500.00' },
-  { id: 'TRN005', date: '2024-07-10', type: 'Sale', company: 'Company 1', counterparty: 'Local Coop', counterpartyType: 'Customer', productName: 'Urea Fertilizer', quantity: 20, unit: 'bags', amount: '$500.00' },
-  { id: 'TRN006', date: '2024-07-09', type: 'Purchase', company: 'Company 2', counterparty: 'Isabella Garcia', counterpartyType: 'Farmer', productName: 'White Maize', quantity: 30, unit: 'ton', amount: '$6,300.00' },
-  { id: 'TRN007', date: '2024-07-08', type: 'Purchase', company: 'Company 1', counterparty: 'Heritage Seeds Ltd.', counterpartyType: 'Organization', productName: 'Sorghum Seeds', quantity: 50, unit: 'bags', amount: '$1,200.00' },
-  { id: 'TRN008', date: '2024-07-05', type: 'Sale', company: 'Company 1', counterparty: 'Green Valley Gardens', counterpartyType: 'Customer', productName: 'DAP Fertilizer', quantity: 15, unit: 'bags', amount: '$525.00' },
-];
+import { initialTransactionData, Transaction } from '@/lib/data';
 
 const columns = [
   { header: 'Voucher No.', accessorKey: 'id' as keyof Transaction },
@@ -71,6 +48,8 @@ function TransactionsComponent() {
     const router = useRouter();
     const company = searchParams.get('company') || 'Company 1';
     const activeCompany = company as 'Company 1' | 'Company 2';
+    
+    const [transactionData, setTransactionData] = useState<Transaction[]>(initialTransactionData);
     
     const handleCompanyChange = (company: string) => {
         router.push(`/transactions?company=${company}`);

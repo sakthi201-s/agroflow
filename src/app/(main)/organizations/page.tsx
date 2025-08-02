@@ -5,22 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { PlusCircle, Building, User, Phone, Mail, History, Package } from 'lucide-react';
 import Link from 'next/link';
-
-export type Organization = {
-  id: string;
-  name: string;
-  contactPerson: string;
-  phone: string;
-  email: string;
-  productTypes: string;
-};
-
-export const organizationData: Organization[] = [
-  { id: 'ORG001', name: 'Agri Supplies Co.', contactPerson: 'Mark Johnson', phone: '555-0201', email: 'sales@agrisupplies.com', productTypes: 'Fertilizer, Seeds' },
-  { id: 'ORG002', name: 'Global Exports Inc.', contactPerson: 'Susan Lee', phone: '555-0202', email: 'susan.lee@globalexports.com', productTypes: 'Maize' },
-  { id: 'ORG003', name: 'Maize Traders LLC', contactPerson: 'David Chen', phone: '555-0203', email: 'david.chen@maizetraders.com', productTypes: 'Maize' },
-  { id: 'ORG004', name: 'Heritage Seeds Ltd.', contactPerson: 'Maria Garcia', phone: '555-0204', email: 'maria.g@heritageseeds.com', productTypes: 'Seeds' },
-];
+import { organizationData, type Organization } from '@/lib/data';
 
 export default function OrganizationsPage() {
   return (

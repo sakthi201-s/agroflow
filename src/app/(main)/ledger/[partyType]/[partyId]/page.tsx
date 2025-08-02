@@ -6,10 +6,7 @@ import { DataTable } from '@/components/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
-import { transactionData, Transaction } from '@/app/(main)/transactions/page';
-import { customerData } from '@/app/(main)/customers/page';
-import { farmerData } from '@/app/(main)/farmers/page';
-import { organizationData } from '@/app/(main)/organizations/page';
+import { initialTransactionData, Transaction, customerData, farmerData, organizationData } from '@/lib/data';
 
 const columns = [
   { header: 'Voucher No.', accessorKey: 'id' as keyof Transaction },
@@ -57,7 +54,7 @@ export default function LedgerPage() {
   
   const partyName = getPartyName();
 
-  const filteredTransactions = transactionData.filter(
+  const filteredTransactions = initialTransactionData.filter(
     (t) => t.counterparty === partyName
   );
 

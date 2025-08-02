@@ -1,14 +1,15 @@
 
 'use client';
 
-import { Suspense } from 'react';
+import { Suspense, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { DataTable } from '@/components/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { transactionData, Transaction } from '@/app/(main)/transactions/page';
+import { initialTransactionData, Transaction } from '@/lib/data';
+import { CreateVoucherForm } from './components/create-voucher-form';
 
 const columns = [
   { header: 'Voucher No.', accessorKey: 'id' as keyof Transaction },
@@ -49,8 +50,21 @@ function DayBookComponent() {
     const company = searchParams.get('company') || 'Company 1';
     const activeCompany = company as 'Company 1' | 'Company 2';
     
+    const [transactionData, setTransactionData] = useState<Transaction[]>(initialTransactionData);
+
     const handleCompanyChange = (company: string) => {
         router.push(`/day-book?company=${company}`);
+    };
+
+    const addTransaction = (newTransaction: Omit<Transaction, 'id' | 'company'>) => {
+        setTransactionData(prev => [
+            { 
+                ...newTransaction, 
+                id: `TRN${(prev.length + 1).toString().padStart(3, '0')}`,
+                company: activeCompany
+            }, 
+            ...prev
+        ]);
     };
     
     const filteredData = transactionData.filter(item => item.company === activeCompany);
@@ -69,9 +83,7 @@ function DayBookComponent() {
                     <TabsTrigger value="Company 2">Maize Import/Export</TabsTrigger>
                 </TabsList>
             </Tabs>
-            <Button>
-            <PlusCircle className="mr-2 h-4 w-4" /> Create Voucher
-            </Button>
+            <CreateVoucherForm onSubmit={addTransaction} />
         </div>
       </div>
       <DataTable columns={columns} data={filteredData} tableName="DayBook" />

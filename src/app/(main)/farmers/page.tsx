@@ -1,25 +1,11 @@
+
 'use client';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { PlusCircle, Tractor, Phone, MapPin, Wheat, History } from 'lucide-react';
 import Link from 'next/link';
-
-export type Farmer = {
-  id: string;
-  name: string;
-  location: string;
-  phone: string;
-  cropType: string;
-  acreage: number;
-};
-
-export const farmerData: Farmer[] = [
-  { id: 'FARM001', name: 'Samuel Miller', location: 'West Valley', phone: '555-0301', cropType: 'Yellow Maize', acreage: 150 },
-  { id: 'FARM002', name: 'Isabella Garcia', location: 'East Ridge', phone: '555-0302', cropType: 'White Maize', acreage: 200 },
-  { id: 'FARM003', name: 'William Brown', location: 'North Plains', phone: '555-0303', cropType: 'Yellow Maize', acreage: 120 },
-  { id: 'FARM004', name: 'Sophia Nguyen', location: 'South Delta', phone: '555-0304', cropType: 'Mixed Maize', acreage: 300 },
-];
+import { farmerData, type Farmer } from '@/lib/data';
 
 export default function FarmersPage() {
   return (
