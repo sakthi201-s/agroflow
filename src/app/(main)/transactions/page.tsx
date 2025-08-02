@@ -60,12 +60,12 @@ const columns = (onViewDetails: (transaction: Transaction) => void) => [
 const PrintableVoucher = React.forwardRef<HTMLDivElement, { transaction: Transaction }>(({ transaction }, ref) => {
     return (
         <div ref={ref} className="p-8">
-             <DialogHeader>
-                <DialogTitle>Transaction Voucher: {transaction.id}</DialogTitle>
-                <DialogDescription>
-                    Date: {transaction.date} | Party: {transaction.counterparty}
-                </DialogDescription>
-            </DialogHeader>
+             <div className="mb-4">
+                <h2 className="text-2xl font-bold">Transaction Voucher: {transaction.id}</h2>
+                <div className="text-muted-foreground">
+                    <p>Date: {transaction.date} | Party: {transaction.counterparty}</p>
+                </div>
+            </div>
             <div className="mt-4 space-y-4">
                 <div className="grid grid-cols-4 font-semibold border-b pb-2">
                     <div>Product</div>
