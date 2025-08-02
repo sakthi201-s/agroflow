@@ -1,23 +1,38 @@
 
 'use client';
 
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { PlusCircle, Tractor, Phone, MapPin, Wheat, History } from 'lucide-react';
 import Link from 'next/link';
-import { farmerData } from '@/lib/data';
+import { farmerData, Farmer } from '@/lib/data';
+import { CreateFarmerForm } from './components/create-farmer-form';
 
 export default function FarmersPage() {
+  const [currentFarmerData, setCurrentFarmerData] = useState<Farmer[]>(farmerData);
+  const [isCreateFarmerOpen, setCreateFarmerOpen] = useState(false);
+
+  const handleFarmerCreated = (newFarmer: Farmer) => {
+    setCurrentFarmerData(prev => [...prev, newFarmer]);
+  };
+
   return (
+    <>
+    <CreateFarmerForm 
+      isOpen={isCreateFarmerOpen}
+      onOpenChange={setCreateFarmerOpen}
+      onFarmerCreated={handleFarmerCreated}
+    />
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Farmer Management (Suppliers)</h1>
-        <Button>
+        <Button onClick={() => setCreateFarmerOpen(true)}>
           <PlusCircle className="mr-2 h-4 w-4" /> Add Farmer
         </Button>
       </div>
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {farmerData.map((farmer) => (
+        {currentFarmerData.map((farmer) => (
           <Card key={farmer.id}>
             <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -52,5 +67,6 @@ export default function FarmersPage() {
         ))}
       </div>
     </div>
+    </>
   );
 }
