@@ -8,9 +8,10 @@ import { PlusCircle, Building, User, Phone, Mail, History, Package } from 'lucid
 import Link from 'next/link';
 import { organizationData, Organization } from '@/lib/data';
 import { CreateOrganizationForm } from './components/create-organization-form';
+import { useLocalStorage } from '@/hooks/use-local-storage';
 
 export default function OrganizationsPage() {
-  const [currentOrganizationData, setCurrentOrganizationData] = useState<Organization[]>(organizationData);
+  const [currentOrganizationData, setCurrentOrganizationData] = useLocalStorage<Organization[]>('organizationData', organizationData);
   const [isCreateOrgOpen, setCreateOrgOpen] = useState(false);
 
   const handleOrganizationCreated = (newOrg: Organization) => {

@@ -10,6 +10,7 @@ import { initialTransactionData, Transaction } from '@/lib/data';
 import { Button } from '@/components/ui/button';
 import { Eye } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { useLocalStorage } from '@/hooks/use-local-storage';
 
 const columns = (onViewDetails: (transaction: Transaction) => void) => [
   { header: 'Voucher No.', accessorKey: 'id' as keyof Transaction },
@@ -55,9 +56,7 @@ function DayBookComponent() {
     const company = searchParams.get('company') || 'Company 1';
     const activeCompany = company as 'Company 1' | 'Company 2';
     
-    // In a real app, this data would likely be managed by a global state manager (like Redux or Zustand)
-    // or fetched from an API. For this prototype, we'll just use the initial static data.
-    const [transactionData] = useState<Transaction[]>(initialTransactionData);
+    const [transactionData] = useLocalStorage<Transaction[]>('transactionData', initialTransactionData);
     const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
 
     const handleCompanyChange = (company: string) => {
@@ -136,5 +135,3 @@ export default function DayBookPage() {
         </Suspense>
     )
 }
-
-    

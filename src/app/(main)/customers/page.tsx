@@ -8,9 +8,10 @@ import { PlusCircle, User, Phone, Mail, MapPin, History } from 'lucide-react';
 import Link from 'next/link';
 import { customerData, Customer } from '@/lib/data';
 import { CreateCustomerForm } from './components/create-customer-form';
+import { useLocalStorage } from '@/hooks/use-local-storage';
 
 export default function CustomersPage() {
-  const [currentCustomerData, setCurrentCustomerData] = useState<Customer[]>(customerData);
+  const [currentCustomerData, setCurrentCustomerData] = useLocalStorage<Customer[]>('customerData', customerData);
   const [isCreateCustomerOpen, setCreateCustomerOpen] = useState(false);
 
   const handleCustomerCreated = (newCustomer: Customer) => {

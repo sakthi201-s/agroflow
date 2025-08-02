@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { initialTransactionData, Transaction, customerData, farmerData, organizationData } from '@/lib/data';
+import { useLocalStorage } from '@/hooks/use-local-storage';
 
 const columns = [
   { header: 'Voucher No.', accessorKey: 'id' as keyof Transaction },
@@ -37,21 +38,26 @@ export default function LedgerPage() {
   const params = useParams();
   const { partyType, partyId } = params;
 
+  const [transactions] = useLocalStorage<Transaction[]>('transactionData', initialTransactionData);
+  const [customers] = useLocalStorage<typeof customerData>('customerData', customerData);
+  const [farmers] = useLocalStorage<typeof farmerData>('farmerData', farmerData);
+  const [organizations] = useLocalStorage<typeof organizationData>('organizationData', organizationData);
+
   const getPartyName = () => {
     let party;
     if (partyType === 'customer') {
-      party = customerData.find(c => c.id === partyId);
+      party = customers.find(c => c.id === partyId);
     } else if (partyType === 'farmer') {
-      party = farmerData.find(f => f.id === partyId);
+      party = farmers.find(f => f.id === partyId);
     } else if (partyType === 'organization') {
-      party = organizationData.find(o => o.id === partyId);
+      party = organizations.find(o => o.id === partyId);
     }
     return party?.name || 'Unknown';
   };
   
   const partyName = getPartyName();
 
-  const filteredTransactions = initialTransactionData.filter(
+  const filteredTransactions = transactions.filter(
     (t) => t.counterparty === partyName
   );
 
@@ -72,5 +78,3 @@ export default function LedgerPage() {
     </div>
   );
 }
-
-    

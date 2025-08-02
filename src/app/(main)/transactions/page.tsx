@@ -10,6 +10,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { initialTransactionData, Transaction } from '@/lib/data';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { useLocalStorage } from '@/hooks/use-local-storage';
 
 function TransactionsComponent() {
     const searchParams = useSearchParams();
@@ -17,7 +18,7 @@ function TransactionsComponent() {
     const company = searchParams.get('company') || 'Company 1';
     const activeCompany = company as 'Company 1' | 'Company 2';
 
-    const [transactionData] = useState<Transaction[]>(initialTransactionData);
+    const [transactionData] = useLocalStorage<Transaction[]>('transactionData', initialTransactionData);
     const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
 
     const handleCompanyChange = (company: string) => {
@@ -89,7 +90,7 @@ function TransactionsComponent() {
                     {selectedTransaction && (
                         <>
                             <DialogHeader>
-                                <DialogTitle>Transaction Voucher: {selectedTransaction.id}</DialogTitle>
+                                <DialogTitle>Transaction Details: {selectedTransaction.id}</DialogTitle>
                                 <DialogDescription>
                                     Date: {selectedTransaction.date} | Party: {selectedTransaction.counterparty}
                                 </DialogDescription>

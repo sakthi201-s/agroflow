@@ -9,6 +9,7 @@ import { DataTable } from '@/components/data-table';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { stockData, StockItem } from '@/lib/data';
 import { CreateStockItemForm } from './components/create-stock-item-form';
+import { useLocalStorage } from '@/hooks/use-local-storage';
 
 const columns = [
   { header: 'Product ID', accessorKey: 'id' as keyof StockItem },
@@ -25,7 +26,7 @@ function StockComponent() {
   const company = searchParams.get('company') || 'Company 1';
   const activeCompany = company as 'Company 1' | 'Company 2';
 
-  const [currentStockData, setCurrentStockData] = useState<StockItem[]>(stockData);
+  const [currentStockData, setCurrentStockData] = useLocalStorage<StockItem[]>('stockData', stockData);
   const [isCreateStockOpen, setCreateStockOpen] = useState(false);
   
   const handleCompanyChange = (company: string) => {

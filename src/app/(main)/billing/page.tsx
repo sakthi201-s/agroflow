@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { CreateBillForm } from './components/create-bill-form';
 import { initialBillingData, initialTransactionData, Bill, Transaction } from '@/lib/data';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { useLocalStorage } from '@/hooks/use-local-storage';
 
 type FilterType = 'All' | 'Customer' | 'Organization' | 'Farmer';
 
@@ -22,8 +23,8 @@ function BillingComponent() {
     const activeCompany = company as 'Company 1' | 'Company 2';
 
     const [activeFilter, setActiveFilter] = useState<FilterType>('All');
-    const [billingData, setBillingData] = useState<Bill[]>(initialBillingData);
-    const [transactionData, setTransactionData] = useState<Transaction[]>(initialTransactionData);
+    const [billingData, setBillingData] = useLocalStorage<Bill[]>('billingData', initialBillingData);
+    const [transactionData, setTransactionData] = useLocalStorage<Transaction[]>('transactionData', initialTransactionData);
     const [isCreateBillOpen, setCreateBillOpen] = useState(false);
     const [lastCreatedBill, setLastCreatedBill] = useState<Bill | null>(null);
 
@@ -57,7 +58,6 @@ function BillingComponent() {
                             table { width: 100%; border-collapse: collapse; }
                             th { text-align: left; padding: 8px; border-bottom: 2px solid #333; }
                             .total-row { font-weight: bold; border-top: 2px solid #333; }
-                            .total-row td { padding: 8px; }
                         </style>
                     </head>
                     <body>
@@ -111,11 +111,9 @@ function BillingComponent() {
     };
 
     const handleBillCreated = (newBill: Bill, newTransaction: Transaction) => {
-        // Don't add to list yet, wait for user to set status
         setLastCreatedBill(newBill);
-        // We still create the transaction immediately
         setTransactionData(prev => [...prev, newTransaction]);
-        setCreateBillOpen(false); // Close the form dialog
+        setCreateBillOpen(false);
     };
 
     const finalizeBill = (status: 'Paid' | 'Pending') => {
@@ -123,12 +121,8 @@ function BillingComponent() {
         
         const finalBill = { ...lastCreatedBill, status };
         setBillingData(prev => [...prev, finalBill]);
-
-        if (status === 'Paid') {
-            // Potentially update transaction status or create payment record here in a real app
-        }
         
-        setLastCreatedBill(null); // Close the confirmation dialog
+        setLastCreatedBill(null);
     }
 
     const columns = [

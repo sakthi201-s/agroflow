@@ -8,9 +8,10 @@ import { PlusCircle, Tractor, Phone, MapPin, History } from 'lucide-react';
 import Link from 'next/link';
 import { farmerData, Farmer } from '@/lib/data';
 import { CreateFarmerForm } from './components/create-farmer-form';
+import { useLocalStorage } from '@/hooks/use-local-storage';
 
 export default function FarmersPage() {
-  const [currentFarmerData, setCurrentFarmerData] = useState<Farmer[]>(farmerData);
+  const [currentFarmerData, setCurrentFarmerData] = useLocalStorage<Farmer[]>('farmerData', farmerData);
   const [isCreateFarmerOpen, setCreateFarmerOpen] = useState(false);
 
   const handleFarmerCreated = (newFarmer: Farmer) => {
