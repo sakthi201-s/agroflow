@@ -28,8 +28,8 @@ const formSchema = z.object({
   name: z.string().min(2, 'Farmer name must be at least 2 characters.'),
   location: z.string().min(2, 'Location is required.'),
   phone: z.string().min(10, 'Please enter a valid phone number.'),
-  cropType: z.string().min(3, 'Crop type is required.'),
-  acreage: z.coerce.number().min(1, 'Acreage must be at least 1.'),
+  cropType: z.string().optional(),
+  acreage: z.coerce.number().optional(),
 });
 
 type CreateFarmerFormProps = {
@@ -46,14 +46,18 @@ export function CreateFarmerForm({ isOpen, onOpenChange, onFarmerCreated }: Crea
       location: '',
       phone: '',
       cropType: '',
-      acreage: 1,
+      acreage: 0,
     }
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     const newFarmer: Farmer = {
       id: `FARM-${Date.now().toString().slice(-4)}`,
-      ...values,
+      name: values.name,
+      location: values.location,
+      phone: values.phone,
+      cropType: values.cropType || '',
+      acreage: values.acreage || 0,
     };
     
     onFarmerCreated(newFarmer);
@@ -116,7 +120,7 @@ export function CreateFarmerForm({ isOpen, onOpenChange, onFarmerCreated }: Crea
               name="cropType"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Crop Type</FormLabel>
+                  <FormLabel>Crop Type (Optional)</FormLabel>
                   <FormControl>
                     <Input placeholder="e.g., Yellow Maize" {...field} />
                   </FormControl>
@@ -129,7 +133,7 @@ export function CreateFarmerForm({ isOpen, onOpenChange, onFarmerCreated }: Crea
               name="acreage"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Acreage</FormLabel>
+                  <FormLabel>Acreage (Optional)</FormLabel>
                   <FormControl>
                     <Input type="number" placeholder="e.g., 150" {...field} />
                   </FormControl>

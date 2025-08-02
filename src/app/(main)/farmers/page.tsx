@@ -50,10 +50,12 @@ export default function FarmersPage() {
                     <Phone className="h-4 w-4 text-muted-foreground" />
                     <span>{farmer.phone}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                    <Wheat className="h-4 w-4 text-muted-foreground" />
-                    <span>{farmer.cropType} ({farmer.acreage} acres)</span>
-                </div>
+                {farmer.cropType && (
+                    <div className="flex items-center gap-2">
+                        <Wheat className="h-4 w-4 text-muted-foreground" />
+                        <span>{farmer.cropType} ({farmer.acreage} acres)</span>
+                    </div>
+                )}
             </CardContent>
             <CardFooter>
                 <Button asChild variant="outline" className="w-full">
