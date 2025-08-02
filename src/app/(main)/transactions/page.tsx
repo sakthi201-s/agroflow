@@ -88,33 +88,33 @@ function TransactionsComponent() {
                 <DialogContent className="max-w-2xl">
                     {selectedTransaction && (
                         <>
-                            <div className="p-4">
-                                <div className="space-y-2">
-                                    <h2 className="text-2xl font-bold">Transaction Voucher: {selectedTransaction.id}</h2>
-                                    <p className="text-muted-foreground">Date: {selectedTransaction.date} | Party: {selectedTransaction.counterparty}</p>
+                            <DialogHeader>
+                                <DialogTitle>Transaction Voucher: {selectedTransaction.id}</DialogTitle>
+                                <DialogDescription>
+                                    Date: {selectedTransaction.date} | Party: {selectedTransaction.counterparty}
+                                </DialogDescription>
+                            </DialogHeader>
+                            <div className="mt-4 space-y-4">
+                                <div className="grid grid-cols-4 font-semibold border-b pb-2">
+                                    <div>Product</div>
+                                    <div className="text-right">Quantity</div>
+                                    <div className="text-right">Price/Unit</div>
+                                    <div className="text-right">Total</div>
                                 </div>
-                                <div className="mt-4 space-y-4">
-                                    <div className="grid grid-cols-4 font-semibold border-b pb-2">
-                                        <div>Product</div>
-                                        <div className="text-right">Quantity</div>
-                                        <div className="text-right">Price/Unit</div>
-                                        <div className="text-right">Total</div>
-                                    </div>
-                                    {selectedTransaction.items.map((item, index) => (
-                                        <div key={index} className="grid grid-cols-4 items-center">
-                                            <div>
-                                                <p className="font-medium">{item.productName}</p>
-                                                <p className="text-xs text-muted-foreground">{item.unit}</p>
-                                            </div>
-                                            <div className="text-right">{item.quantity}</div>
-                                            <div className="text-right">${item.price.toFixed(2)}</div>
-                                            <div className="text-right font-medium">${(item.quantity * item.price).toFixed(2)}</div>
+                                {selectedTransaction.items.map((item, index) => (
+                                    <div key={index} className="grid grid-cols-4 items-center">
+                                        <div>
+                                            <p className="font-medium">{item.productName}</p>
+                                            <p className="text-xs text-muted-foreground">{item.unit}</p>
                                         </div>
-                                    ))}
-                                    <div className="grid grid-cols-4 font-bold border-t pt-2">
-                                        <div className="col-span-3 text-right">Grand Total</div>
-                                        <div className="text-right">${selectedTransaction.totalAmount.toFixed(2)}</div>
+                                        <div className="text-right">{item.quantity}</div>
+                                        <div className="text-right">${item.price.toFixed(2)}</div>
+                                        <div className="text-right font-medium">${(item.quantity * item.price).toFixed(2)}</div>
                                     </div>
+                                ))}
+                                <div className="grid grid-cols-4 font-bold border-t pt-2">
+                                    <div className="col-span-3 text-right">Grand Total</div>
+                                    <div className="text-right">${selectedTransaction.totalAmount.toFixed(2)}</div>
                                 </div>
                             </div>
                             <DialogFooter>
