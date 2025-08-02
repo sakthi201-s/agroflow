@@ -32,8 +32,8 @@ export async function inventoryForecaster(input: InventoryForecasterInput): Prom
 
 const prompt = ai.definePrompt({
   name: 'inventoryForecasterPrompt',
-  input: {schema: InventoryForecasterInputSchema},
-  output: {schema: InventoryForecasterOutputSchema},
+  inputSchema: InventoryForecasterInputSchema,
+  outputSchema: InventoryForecasterOutputSchema,
   prompt: `You are an expert inventory forecaster specializing in agricultural products.
 
 You will use the provided historical sales data, seasonal demand variations, product type, and company name to forecast the optimal stock level.
@@ -50,7 +50,7 @@ Based on this information, provide the forecasted optimal stock level, an explan
 
 Forecasted Stock Level: 
 Explanation: 
-Notification Message:`, // Handlebars syntax
+Notification Message:`,
 });
 
 const inventoryForecasterFlow = ai.defineFlow(

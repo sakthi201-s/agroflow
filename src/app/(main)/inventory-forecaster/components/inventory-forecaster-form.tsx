@@ -211,7 +211,7 @@ export function InventoryForecasterForm() {
           )}
            {!result && !isLoading && (
             <div className="flex h-full flex-col items-center justify-center text-center">
-                <BrainCircuit className="h-16 w-16 text-muted-foreground/30 mb-4" />
+                <Lightbulb className="h-16 w-16 text-muted-foreground/30 mb-4" />
                 <p className="text-muted-foreground">Your forecast results will be displayed here.</p>
                 <p className="text-sm text-muted-foreground/80">Fill out the form and click "Generate Forecast".</p>
             </div>
