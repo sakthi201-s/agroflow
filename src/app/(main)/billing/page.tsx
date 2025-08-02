@@ -42,6 +42,10 @@ function BillingComponent() {
     const handleBillCreated = (newBill: Bill, newTransaction: Transaction) => {
         setBillingData(prev => [...prev, newBill]);
         setTransactionData(prev => [...prev, newTransaction]);
+        // Note: In a real app, this should update a central data store
+        // and other pages would react. For now, we update local state.
+        // To see the new transaction in the Day Book, a refresh might be needed
+        // until a proper state management solution is in place.
     };
 
     const columns = [
@@ -71,7 +75,11 @@ function BillingComponent() {
           return <Badge variant="outline">{type}</Badge>;
         }
       },
-      { header: 'Amount', accessorKey: 'amount' as keyof Bill },
+      { 
+        header: 'Amount', 
+        accessorKey: 'totalAmount' as keyof Bill,
+        cell: ({ getValue }: { getValue: () => number }) => `$${getValue().toFixed(2)}`
+      },
       { header: 'Due Date', accessorKey: 'dueDate' as keyof Bill },
       { 
         header: 'Status', 
@@ -85,7 +93,7 @@ function BillingComponent() {
       },
        {
         header: 'Actions',
-        accessorKey: 'invoiceId' as keyof Bill,
+        id: 'actions',
         cell: ({ row }: { row: { original: Bill } }) => {
             const bill = row.original;
             return (
@@ -180,3 +188,5 @@ export default function BillingPage() {
         </Suspense>
     )
 }
+
+    

@@ -23,14 +23,11 @@ const columns = [
       );
     },
   },
-  { header: 'Product', accessorKey: 'productName' as keyof Transaction },
-  { header: 'Quantity', accessorKey: 'quantity' as keyof Transaction },
-  { header: 'Unit', accessorKey: 'unit' as keyof Transaction },
   {
-    header: 'Amount',
-    accessorKey: 'amount' as keyof Transaction,
-    cell: ({ getValue }: { getValue: () => string }) => (
-      <span className="font-medium">{getValue()}</span>
+    header: 'Total Amount',
+    accessorKey: 'totalAmount' as keyof Transaction,
+    cell: ({ getValue }: { getValue: () => number }) => (
+      <span className="font-medium">${getValue().toFixed(2)}</span>
     ),
   },
 ];
@@ -75,3 +72,5 @@ export default function LedgerPage() {
     </div>
   );
 }
+
+    

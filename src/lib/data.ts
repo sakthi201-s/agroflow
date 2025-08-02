@@ -1,4 +1,12 @@
 
+export type BillItem = {
+    id: string;
+    productName: string;
+    quantity: number;
+    unit: 'kg' | 'ton' | 'bags';
+    price: number;
+}
+
 export type Transaction = {
   id: string;
   date: string;
@@ -6,21 +14,54 @@ export type Transaction = {
   company: 'Company 1' | 'Company 2';
   counterparty: string;
   counterpartyType: 'Customer' | 'Farmer' | 'Organization';
-  productName: string;
-  quantity: number;
-  unit: 'kg' | 'ton' | 'bags';
-  amount: string;
+  items: BillItem[];
+  totalAmount: number;
 };
 
 export const initialTransactionData: Transaction[] = [
-  { id: 'TRN001', date: '2024-07-15', type: 'Sale', company: 'Company 1', counterparty: 'John Doe Farms', counterpartyType: 'Customer', productName: 'Urea Fertilizer', quantity: 50, unit: 'bags', amount: '$1,250.00' },
-  { id: 'TRN002', date: '2024-07-14', type: 'Purchase', company: 'Company 2', counterparty: 'Samuel Miller', counterpartyType: 'Farmer', productName: 'Yellow Maize', quantity: 20, unit: 'ton', amount: '$4,000.00' },
-  { id: 'TRN003', date: '2024-07-12', type: 'Purchase', company: 'Company 1', counterparty: 'Agri Supplies Co.', counterpartyType: 'Organization', productName: 'DAP Fertilizer', quantity: 100, unit: 'bags', amount: '$3,500.00' },
-  { id: 'TRN004', date: '2024-07-11', type: 'Sale', company: 'Company 1', counterparty: 'Jane Smith Fields', counterpartyType: 'Customer', productName: 'Hybrid Maize Seeds', quantity: 10, unit: 'bags', amount: '$500.00' },
-  { id: 'TRN005', date: '2024-07-10', type: 'Sale', company: 'Company 1', counterparty: 'Local Coop', counterpartyType: 'Customer', productName: 'Urea Fertilizer', quantity: 20, unit: 'bags', amount: '$500.00' },
-  { id: 'TRN006', date: '2024-07-09', type: 'Purchase', company: 'Company 2', counterparty: 'Isabella Garcia', counterpartyType: 'Farmer', productName: 'White Maize', quantity: 30, unit: 'ton', amount: '$6,300.00' },
-  { id: 'TRN007', date: '2024-07-08', type: 'Purchase', company: 'Company 1', counterparty: 'Heritage Seeds Ltd.', counterpartyType: 'Organization', productName: 'Sorghum Seeds', quantity: 50, unit: 'bags', amount: '$1,200.00' },
-  { id: 'TRN008', date: '2024-07-05', type: 'Sale', company: 'Company 1', counterparty: 'Green Valley Gardens', counterpartyType: 'Customer', productName: 'DAP Fertilizer', quantity: 15, unit: 'bags', amount: '$525.00' },
+  { 
+    id: 'TRN001', 
+    date: '2024-07-15', 
+    type: 'Sale', 
+    company: 'Company 1', 
+    counterparty: 'John Doe Farms', 
+    counterpartyType: 'Customer', 
+    items: [{ id: 'STK001', productName: 'Urea Fertilizer', quantity: 50, unit: 'bags', price: 25 }],
+    totalAmount: 1250.00 
+  },
+  { 
+    id: 'TRN002', 
+    date: '2024-07-14', 
+    type: 'Purchase', 
+    company: 'Company 2', 
+    counterparty: 'Samuel Miller', 
+    counterpartyType: 'Farmer', 
+    items: [{ id: 'STK003', productName: 'Yellow Maize', quantity: 20, unit: 'ton', price: 200 }],
+    totalAmount: 4000.00
+  },
+  { 
+    id: 'TRN003', 
+    date: '2024-07-12', 
+    type: 'Purchase', 
+    company: 'Company 1', 
+    counterparty: 'Agri Supplies Co.', 
+    counterpartyType: 'Organization',
+    items: [{ id: 'STK004', productName: 'DAP Fertilizer', quantity: 100, unit: 'bags', price: 35 }],
+    totalAmount: 3500.00
+  },
+  { 
+    id: 'TRN004', 
+    date: '2024-07-11', 
+    type: 'Sale', 
+    company: 'Company 1', 
+    counterparty: 'Jane Smith Fields', 
+    counterpartyType: 'Customer',
+    items: [
+        { id: 'STK002', productName: 'Hybrid Maize Seeds', quantity: 10, unit: 'bags', price: 50 },
+        { id: 'STK001', productName: 'Urea Fertilizer', quantity: 5, unit: 'bags', price: 25 }
+    ],
+    totalAmount: 625.00
+  },
 ];
 
 export type Customer = {
@@ -96,19 +137,18 @@ export type Bill = {
   counterpartyType: 'Customer' | 'Organization' | 'Farmer';
   billType: 'Receivable' | 'Payable';
   company: 'Company 1' | 'Company 2';
-  amount: string;
+  totalAmount: number;
   dueDate: string;
   status: 'Paid' | 'Pending' | 'Overdue';
+  items: BillItem[];
 };
 
 export const initialBillingData: Bill[] = [
-    { invoiceId: 'INV-2024001', customer: 'John Doe Farms', counterpartyType: 'Customer', billType: 'Receivable', company: 'Company 1', amount: '$1,250.00', dueDate: '2024-07-30', status: 'Paid' },
-    { invoiceId: 'BILL-001', customer: 'Agri Supplies Co.', counterpartyType: 'Organization', billType: 'Payable', company: 'Company 1', amount: '$3,500.00', dueDate: '2024-08-20', status: 'Pending' },
-    { invoiceId: 'INV-2024002', customer: 'Global Exports Inc.', counterpartyType: 'Organization', billType: 'Receivable', company: 'Company 2', amount: '$15,000.00', dueDate: '2024-08-15', status: 'Pending' },
-    { invoiceId: 'BILL-002', customer: 'Samuel Miller', counterpartyType: 'Farmer', billType: 'Payable', company: 'Company 2', amount: '$4,000.00', dueDate: '2024-08-10', status: 'Paid' },
-    { invoiceId: 'INV-2024003', customer: 'Agri Supplies Co.', counterpartyType: 'Organization', billType: 'Receivable', company: 'Company 1', amount: '$800.50', dueDate: '2024-06-20', status: 'Overdue' },
-    { invoiceId: 'INV-2024004', customer: 'Jane Smith Fields', counterpartyType: 'Customer', billType: 'Receivable', company: 'Company 1', amount: '$3,500.00', dueDate: '2024-08-05', status: 'Pending' },
-    { invoiceId: 'INV-2024005', customer: 'Maize Traders LLC', counterpartyType: 'Organization', billType: 'Receivable', company: 'Company 2', amount: '$22,300.00', dueDate: '2024-07-25', status: 'Paid' },
-    { invoiceId: 'INV-2024006', customer: 'Local Coop', counterpartyType: 'Customer', billType: 'Receivable', company: 'Company 1', amount: '$550.00', dueDate: '2024-08-20', status: 'Pending' },
-    { invoiceId: 'BILL-003', customer: 'Isabella Garcia', counterpartyType: 'Farmer', billType: 'Payable', company: 'Company 2', amount: '$6,300.00', dueDate: '2024-08-25', status: 'Pending' },
+    { invoiceId: 'INV-2024001', customer: 'John Doe Farms', counterpartyType: 'Customer', billType: 'Receivable', company: 'Company 1', totalAmount: 1250.00, dueDate: '2024-07-30', status: 'Paid', items: [{id: 'STK001', productName: 'Urea Fertilizer', quantity: 50, unit: 'bags', price: 25}] },
+    { invoiceId: 'BILL-001', customer: 'Agri Supplies Co.', counterpartyType: 'Organization', billType: 'Payable', company: 'Company 1', totalAmount: 3500.00, dueDate: '2024-08-20', status: 'Pending', items: [{id: 'STK004', productName: 'DAP Fertilizer', quantity: 100, unit: 'bags', price: 35}] },
+    { invoiceId: 'INV-2024002', customer: 'Global Exports Inc.', counterpartyType: 'Organization', billType: 'Receivable', company: 'Company 2', totalAmount: 15000.00, dueDate: '2024-08-15', status: 'Pending', items: [{id: 'STK003', productName: 'Imported Yellow Maize', quantity: 75, unit: 'ton', price: 200}] },
+    { invoiceId: 'BILL-002', customer: 'Samuel Miller', counterpartyType: 'Farmer', billType: 'Payable', company: 'Company 2', totalAmount: 4000.00, dueDate: '2024-08-10', status: 'Paid', items: [{id: 'FARM001', productName: 'Yellow Maize', quantity: 20, unit: 'ton', price: 200}]},
+    { invoiceId: 'INV-2024003', customer: 'Jane Smith Fields', counterpartyType: 'Customer', billType: 'Receivable', company: 'Company 1', totalAmount: 625.00, dueDate: '2024-08-05', status: 'Pending', items: [{ id: 'STK002', productName: 'Hybrid Maize Seeds', quantity: 10, unit: 'bags', price: 50 },{ id: 'STK001', productName: 'Urea Fertilizer', quantity: 5, unit: 'bags', price: 25 }]},
 ];
+
+    

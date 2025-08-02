@@ -5,11 +5,13 @@ import { Suspense, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { DataTable } from '@/components/data-table';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { initialTransactionData, Transaction } from '@/lib/data';
+import { Button } from '@/components/ui/button';
+import { Eye } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 
-const columns = [
+const columns = (onViewDetails: (transaction: Transaction) => void) => [
   { header: 'Voucher No.', accessorKey: 'id' as keyof Transaction },
   { header: 'Date', accessorKey: 'date' as keyof Transaction },
   {
@@ -30,14 +32,19 @@ const columns = [
     accessorKey: 'counterpartyType' as keyof Transaction,
     cell: ({ getValue }: { getValue: () => string }) => <Badge variant="outline">{getValue()}</Badge>,
   },
-  { header: 'Product', accessorKey: 'productName' as keyof Transaction },
-  { header: 'Quantity', accessorKey: 'quantity' as keyof Transaction },
-  { header: 'Unit', accessorKey: 'unit' as keyof Transaction },
   {
-    header: 'Amount',
-    accessorKey: 'amount' as keyof Transaction,
-    cell: ({ getValue }: { getValue: () => string }) => (
-      <span className="font-medium">{getValue()}</span>
+    header: 'Total Amount',
+    accessorKey: 'totalAmount' as keyof Transaction,
+    cell: ({ getValue }: { getValue: () => number }) => (
+      <span className="font-medium">${getValue().toFixed(2)}</span>
+    ),
+  },
+  {
+    header: 'Actions',
+    cell: ({ row }: { row: { original: Transaction } }) => (
+      <Button variant="ghost" size="icon" onClick={() => onViewDetails(row.original)}>
+        <Eye className="h-4 w-4" />
+      </Button>
     ),
   },
 ];
@@ -49,38 +56,77 @@ function DayBookComponent() {
     const activeCompany = company as 'Company 1' | 'Company 2';
     
     // In a real app, this data would likely be managed by a global state manager (like Redux or Zustand)
-    // or fetched from an API, and the billing page would trigger a refetch or update the global state.
-    // For this prototype, we'll just use the initial static data.
-    const [transactionData, setTransactionData] = useState<Transaction[]>(initialTransactionData);
+    // or fetched from an API. For this prototype, we'll just use the initial static data.
+    const [transactionData] = useState<Transaction[]>(initialTransactionData);
+    const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
 
     const handleCompanyChange = (company: string) => {
         router.push(`/day-book?company=${company}`);
     };
     
     const filteredData = transactionData.filter(item => item.company === activeCompany);
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Day Book</h1>
-         <div className="flex items-center gap-4">
-            <Tabs
-                defaultValue={activeCompany}
-                onValueChange={handleCompanyChange}
-                className="transition-all duration-300"
-            >
-                <TabsList>
-                    <TabsTrigger value="Company 1">Fertilizer & Seeds</TabsTrigger>
-                    <TabsTrigger value="Company 2">Maize Import/Export</TabsTrigger>
-                </TabsList>
-            </Tabs>
+
+    return (
+        <div className="space-y-6">
+            <div className="flex items-center justify-between">
+                <h1 className="text-2xl font-bold">Day Book</h1>
+                <div className="flex items-center gap-4">
+                    <Tabs
+                        defaultValue={activeCompany}
+                        onValueChange={handleCompanyChange}
+                        className="transition-all duration-300"
+                    >
+                        <TabsList>
+                            <TabsTrigger value="Company 1">Fertilizer & Seeds</TabsTrigger>
+                            <TabsTrigger value="Company 2">Maize Import/Export</TabsTrigger>
+                        </TabsList>
+                    </Tabs>
+                </div>
+            </div>
+            <p className="text-sm text-muted-foreground">
+                This is a read-only view of all financial transactions. Entries are automatically created from other modules like Billing.
+            </p>
+            <DataTable columns={columns(setSelectedTransaction)} data={filteredData} tableName="DayBook" />
+
+             <Dialog open={!!selectedTransaction} onOpenChange={(isOpen) => !isOpen && setSelectedTransaction(null)}>
+                <DialogContent className="max-w-2xl">
+                    {selectedTransaction && (
+                        <>
+                            <DialogHeader>
+                                <DialogTitle>Transaction Details: {selectedTransaction.id}</DialogTitle>
+                                <DialogDescription>
+                                    Date: {selectedTransaction.date} | Party: {selectedTransaction.counterparty}
+                                </DialogDescription>
+                            </DialogHeader>
+                            <div className="mt-4 space-y-4">
+                                <div className="grid grid-cols-4 font-semibold border-b pb-2">
+                                    <div>Product</div>
+                                    <div className="text-right">Quantity</div>
+                                    <div className="text-right">Price/Unit</div>
+                                    <div className="text-right">Total</div>
+                                </div>
+                                {selectedTransaction.items.map((item, index) => (
+                                    <div key={index} className="grid grid-cols-4 items-center">
+                                        <div>
+                                            <p className="font-medium">{item.productName}</p>
+                                            <p className="text-xs text-muted-foreground">{item.unit}</p>
+                                        </div>
+                                        <div className="text-right">{item.quantity}</div>
+                                        <div className="text-right">${item.price.toFixed(2)}</div>
+                                        <div className="text-right font-medium">${(item.quantity * item.price).toFixed(2)}</div>
+                                    </div>
+                                ))}
+                                 <div className="grid grid-cols-4 font-bold border-t pt-2">
+                                    <div className="col-span-3 text-right">Grand Total</div>
+                                    <div className="text-right">${selectedTransaction.totalAmount.toFixed(2)}</div>
+                                </div>
+                            </div>
+                        </>
+                    )}
+                </DialogContent>
+            </Dialog>
         </div>
-      </div>
-      <p className="text-sm text-muted-foreground">
-        This is a read-only view of all financial transactions. Entries are automatically created from other modules like Billing.
-      </p>
-      <DataTable columns={columns} data={filteredData} tableName="DayBook" />
-    </div>
-  );
+    );
 }
 
 export default function DayBookPage() {
@@ -90,3 +136,5 @@ export default function DayBookPage() {
         </Suspense>
     )
 }
+
+    

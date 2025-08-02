@@ -1,14 +1,25 @@
 
 'use client';
 
-import { Suspense, useState } from 'react';
+import { Suspense, useState, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { DataTable } from '@/components/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { initialTransactionData, Transaction } from '@/lib/data';
+import { Button } from '@/components/ui/button';
+import { Eye, Printer } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter
+} from '@/components/ui/dialog';
+import { useReactToPrint } from 'react-to-print';
 
-const columns = [
+const columns = (onViewDetails: (transaction: Transaction) => void) => [
   { header: 'Voucher No.', accessorKey: 'id' as keyof Transaction },
   { header: 'Date', accessorKey: 'date' as keyof Transaction },
   {
@@ -29,17 +40,62 @@ const columns = [
     accessorKey: 'counterpartyType' as keyof Transaction,
     cell: ({ getValue }: { getValue: () => string }) => <Badge variant="outline">{getValue()}</Badge>,
   },
-  { header: 'Product', accessorKey: 'productName' as keyof Transaction },
-  { header: 'Quantity', accessorKey: 'quantity' as keyof Transaction },
-  { header: 'Unit', accessorKey: 'unit' as keyof Transaction },
   {
-    header: 'Amount',
-    accessorKey: 'amount' as keyof Transaction,
-    cell: ({ getValue }: { getValue: () => string }) => (
-      <span className="font-medium">{getValue()}</span>
+    header: 'Total Amount',
+    accessorKey: 'totalAmount' as keyof Transaction,
+    cell: ({ getValue }: { getValue: () => number }) => (
+      <span className="font-medium">${getValue().toFixed(2)}</span>
+    ),
+  },
+  {
+    header: 'Actions',
+    cell: ({ row }: { row: { original: Transaction } }) => (
+      <Button variant="ghost" size="icon" onClick={() => onViewDetails(row.original)}>
+        <Eye className="h-4 w-4" />
+      </Button>
     ),
   },
 ];
+
+function TransactionDetails({ transaction, onPrint }: { transaction: Transaction; onPrint: () => void; }) {
+    if (!transaction) return null;
+    return (
+        <>
+            <DialogHeader>
+                <DialogTitle>Transaction Details: {transaction.id}</DialogTitle>
+                <DialogDescription>
+                    Date: {transaction.date} | Party: {transaction.counterparty}
+                </DialogDescription>
+            </DialogHeader>
+            <div className="mt-4 space-y-4">
+                <div className="grid grid-cols-4 font-semibold border-b pb-2">
+                    <div>Product</div>
+                    <div className="text-right">Quantity</div>
+                    <div className="text-right">Price/Unit</div>
+                    <div className="text-right">Total</div>
+                </div>
+                {transaction.items.map((item, index) => (
+                    <div key={index} className="grid grid-cols-4 items-center">
+                        <div>
+                            <p className="font-medium">{item.productName}</p>
+                            <p className="text-xs text-muted-foreground">{item.unit}</p>
+                        </div>
+                        <div className="text-right">{item.quantity}</div>
+                        <div className="text-right">${item.price.toFixed(2)}</div>
+                        <div className="text-right font-medium">${(item.quantity * item.price).toFixed(2)}</div>
+                    </div>
+                ))}
+                 <div className="grid grid-cols-4 font-bold border-t pt-2">
+                    <div className="col-span-3 text-right">Grand Total</div>
+                    <div className="text-right">${transaction.totalAmount.toFixed(2)}</div>
+                </div>
+            </div>
+            <DialogFooter className="mt-6">
+                <Button onClick={onPrint}><Printer className="mr-2 h-4 w-4" /> Print</Button>
+            </DialogFooter>
+        </>
+    )
+}
 
 function TransactionsComponent() {
     const searchParams = useSearchParams();
@@ -48,35 +104,73 @@ function TransactionsComponent() {
     const activeCompany = company as 'Company 1' | 'Company 2';
     
     const [transactionData, setTransactionData] = useState<Transaction[]>(initialTransactionData);
+    const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
     
     const handleCompanyChange = (company: string) => {
         router.push(`/transactions?company=${company}`);
     };
+
+    const handleViewDetails = (transaction: Transaction) => {
+        setSelectedTransaction(transaction);
+    };
     
+    const printRef = useRef<HTMLDivElement>(null);
+    const handlePrint = useReactToPrint({
+        content: () => printRef.current,
+        documentTitle: `Voucher_${selectedTransaction?.id}`,
+    });
+
     const filteredData = transactionData.filter(item => item.company === activeCompany);
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Transactions</h1>
-         <div className="flex items-center gap-4">
-            <Tabs
-                defaultValue={activeCompany}
-                onValueChange={handleCompanyChange}
-                className="transition-all duration-300"
-            >
-                <TabsList>
-                    <TabsTrigger value="Company 1">Fertilizer & Seeds</TabsTrigger>
-                    <TabsTrigger value="Company 2">Maize Import/Export</TabsTrigger>
-                </TabsList>
-            </Tabs>
+  
+    return (
+        <div className="space-y-6">
+            <div className="flex items-center justify-between">
+                <h1 className="text-2xl font-bold">Transactions</h1>
+                <div className="flex items-center gap-4">
+                    <Tabs
+                        defaultValue={activeCompany}
+                        onValueChange={handleCompanyChange}
+                        className="transition-all duration-300"
+                    >
+                        <TabsList>
+                            <TabsTrigger value="Company 1">Fertilizer & Seeds</TabsTrigger>
+                            <TabsTrigger value="Company 2">Maize Import/Export</TabsTrigger>
+                        </TabsList>
+                    </Tabs>
+                </div>
+            </div>
+            <p className="text-sm text-muted-foreground">
+                This is a read-only view of all financial transactions. Entries are automatically created from other modules like Billing.
+            </p>
+            <DataTable columns={columns(handleViewDetails)} data={filteredData} tableName="Transactions" />
+
+            <Dialog open={!!selectedTransaction} onOpenChange={(isOpen) => !isOpen && setSelectedTransaction(null)}>
+                <DialogContent className="max-w-2xl">
+                    {selectedTransaction && (
+                       <div ref={printRef} className="p-4 print-only-content">
+                           <TransactionDetails transaction={selectedTransaction} onPrint={handlePrint} />
+                       </div>
+                    )}
+                </DialogContent>
+            </Dialog>
+            <style jsx global>{`
+                @media print {
+                    body * {
+                        visibility: hidden;
+                    }
+                    .print-only-content, .print-only-content * {
+                        visibility: visible;
+                    }
+                    .print-only-content {
+                        position: absolute;
+                        left: 0;
+                        top: 0;
+                        width: 100%;
+                    }
+                }
+            `}</style>
         </div>
-      </div>
-      <p className="text-sm text-muted-foreground">
-        This is a read-only view of all financial transactions. Entries are automatically created from other modules like Billing.
-      </p>
-      <DataTable columns={columns} data={filteredData} tableName="Transactions" />
-    </div>
-  );
+    );
 }
 
 export default function TransactionsPage() {
@@ -86,3 +180,5 @@ export default function TransactionsPage() {
         </Suspense>
     )
 }
+
+    
