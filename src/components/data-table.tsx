@@ -16,7 +16,7 @@ import React from 'react';
 type Column<TData> = {
   header: string;
   accessorKey: keyof TData;
-  cell?: (props: { getValue: () => any }) => React.ReactNode;
+  cell?: (props: { getValue: () => any, row: { original: TData } }) => React.ReactNode;
 };
 
 interface DataTableProps<TData> {
@@ -57,7 +57,7 @@ export function DataTable<TData>({
                   {columns.map((column, colIndex) => (
                     <TableCell key={colIndex}>
                       {column.cell
-                        ? column.cell({ getValue: () => row[column.accessorKey] })
+                        ? column.cell({ getValue: () => row[column.accessorKey], row: { original: row } })
                         : String(row[column.accessorKey])}
                     </TableCell>
                   ))}
