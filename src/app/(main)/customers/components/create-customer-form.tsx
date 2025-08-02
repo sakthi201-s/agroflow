@@ -28,7 +28,7 @@ import { format } from 'date-fns';
 const formSchema = z.object({
   name: z.string().min(2, 'Customer name must be at least 2 characters.'),
   phone: z.string().min(10, 'Please enter a valid phone number.'),
-  email: z.string().email('Please enter a valid email address.'),
+  email: z.string().email('Please enter a valid email address.').or(z.literal('')).optional(),
   address: z.string().min(5, 'Please enter a valid address.'),
 });
 
@@ -53,7 +53,10 @@ export function CreateCustomerForm({ isOpen, onOpenChange, onCustomerCreated }: 
     const newCustomer: Customer = {
       id: `CUS-${Date.now().toString().slice(-4)}`,
       lastPurchaseDate: format(new Date(), 'yyyy-MM-dd'),
-      ...values,
+      name: values.name,
+      phone: values.phone,
+      email: values.email ?? '',
+      address: values.address,
     };
     
     onCustomerCreated(newCustomer);
@@ -103,7 +106,7 @@ export function CreateCustomerForm({ isOpen, onOpenChange, onCustomerCreated }: 
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email Address</FormLabel>
+                  <FormLabel>Email Address (Optional)</FormLabel>
                   <FormControl>
                     <Input placeholder="e.g., john.doe@example.com" {...field} />
                   </FormControl>
