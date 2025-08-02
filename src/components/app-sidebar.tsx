@@ -12,6 +12,7 @@ import {
   Package,
   Book,
   BookOpen,
+  ArrowRightLeft,
 } from 'lucide-react';
 import Link from 'next/link';
 import {usePathname} from 'next/navigation';
@@ -30,6 +31,7 @@ import {Avatar, AvatarFallback, AvatarImage} from './ui/avatar';
 
 const menuItems = [
   {href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard},
+  {href: '/transactions', label: 'Transactions', icon: ArrowRightLeft},
   {href: '/day-book', label: 'Day Book', icon: BookOpen},
   {href: '/stock', label: 'Stock Management', icon: Boxes},
   {href: '/billing', label: 'Billing', icon: Receipt},
