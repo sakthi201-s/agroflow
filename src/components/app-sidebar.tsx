@@ -25,7 +25,6 @@ import {
 } from '@/components/ui/sidebar';
 import {cn} from '@/lib/utils';
 import {Avatar, AvatarFallback, AvatarImage} from './ui/avatar';
-import { Button } from './ui/button';
 
 const menuItems = [
   {href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard},
@@ -58,19 +57,17 @@ export function AppSidebar() {
         <SidebarMenu>
           {menuItems.map((item) => (
             <SidebarMenuItem key={item.href}>
-              <Link href={item.href} passHref>
-                <SidebarMenuButton
-                  asChild
-                  isActive={isActive(item.href)}
-                  className={cn(isActive(item.href) && 'bg-primary/10 text-primary hover:bg-primary/20')}
-                  tooltip={item.label}
-                >
-                  <>
-                    <item.icon className="size-5" />
-                    <span>{item.label}</span>
-                  </>
-                </SidebarMenuButton>
-              </Link>
+              <SidebarMenuButton
+                asChild
+                isActive={isActive(item.href)}
+                className={cn(isActive(item.href) && 'bg-primary/10 text-primary hover:bg-primary/20')}
+                tooltip={item.label}
+              >
+                <Link href={item.href}>
+                  <item.icon className="size-5" />
+                  <span>{item.label}</span>
+                </Link>
+              </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
         </SidebarMenu>
