@@ -1,0 +1,87 @@
+'use client';
+
+import {
+  Boxes,
+  Building,
+  LayoutDashboard,
+  Receipt,
+  Tractor,
+  Users,
+  BrainCircuit,
+  Package,
+} from 'lucide-react';
+import Link from 'next/link';
+import {usePathname} from 'next/navigation';
+
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  SidebarFooter,
+} from '@/components/ui/sidebar';
+import {cn} from '@/lib/utils';
+import {Avatar, AvatarFallback, AvatarImage} from './ui/avatar';
+import { Button } from './ui/button';
+
+const menuItems = [
+  {href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard},
+  {href: '/stock', label: 'Stock Management', icon: Boxes},
+  {href: '/billing', label: 'Billing', icon: Receipt},
+  {href: '/customers', label: 'Customers', icon: Users},
+  {href: '/organizations', label: 'Organizations', icon: Building},
+  {href: '/farmers', label: 'Farmers', icon: Tractor},
+  {
+    href: '/inventory-forecaster',
+    label: 'AI Forecaster',
+    icon: BrainCircuit,
+  },
+];
+
+export function AppSidebar() {
+  const pathname = usePathname();
+  const isActive = (href: string) => pathname === href;
+
+  return (
+    <Sidebar>
+      <SidebarHeader>
+        <div className="flex items-center gap-2">
+          <Package className="size-8 text-primary" />
+          <h1 className="text-xl font-semibold">AgriFlow</h1>
+        </div>
+      </SidebarHeader>
+      <SidebarContent>
+        <SidebarMenu>
+          {menuItems.map((item) => (
+            <SidebarMenuItem key={item.href}>
+              <Link href={item.href} legacyBehavior passHref>
+                <SidebarMenuButton
+                  isActive={isActive(item.href)}
+                  className={cn(isActive(item.href) && 'bg-primary/10 text-primary hover:bg-primary/20')}
+                  tooltip={item.label}
+                >
+                  <item.icon className="size-5" />
+                  <span>{item.label}</span>
+                </SidebarMenuButton>
+              </Link>
+            </SidebarMenuItem>
+          ))}
+        </SidebarMenu>
+      </SidebarContent>
+       <SidebarFooter>
+         <div className="flex items-center gap-2">
+            <Avatar className="h-9 w-9">
+              <AvatarImage src="https://avatar.vercel.sh/user" alt="User" />
+              <AvatarFallback>U</AvatarFallback>
+            </Avatar>
+            <div className="flex flex-col">
+                <span className="text-sm font-semibold">User</span>
+                <span className="text-xs text-muted-foreground">user@agriflow.com</span>
+            </div>
+         </div>
+      </SidebarFooter>
+    </Sidebar>
+  );
+}
