@@ -4,7 +4,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { PlusCircle, Tractor, Phone, MapPin, Wheat, History } from 'lucide-react';
+import { PlusCircle, Tractor, Phone, MapPin, History } from 'lucide-react';
 import Link from 'next/link';
 import { farmerData, Farmer } from '@/lib/data';
 import { CreateFarmerForm } from './components/create-farmer-form';
@@ -50,12 +50,6 @@ export default function FarmersPage() {
                     <Phone className="h-4 w-4 text-muted-foreground" />
                     <span>{farmer.phone}</span>
                 </div>
-                {farmer.cropType && (
-                    <div className="flex items-center gap-2">
-                        <Wheat className="h-4 w-4 text-muted-foreground" />
-                        <span>{farmer.cropType} ({farmer.acreage} acres)</span>
-                    </div>
-                )}
             </CardContent>
             <CardFooter>
                 <Button asChild variant="outline" className="w-full">

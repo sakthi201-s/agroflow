@@ -85,15 +85,13 @@ export type Farmer = {
   name: string;
   location: string;
   phone: string;
-  cropType: string;
-  acreage: number;
 };
 
 export const farmerData: Farmer[] = [
-  { id: 'FARM001', name: 'Samuel Miller', location: 'West Valley', phone: '555-0301', cropType: 'Yellow Maize', acreage: 150 },
-  { id: 'FARM002', name: 'Isabella Garcia', location: 'East Ridge', phone: '555-0302', cropType: 'White Maize', acreage: 200 },
-  { id: 'FARM003', name: 'William Brown', location: 'North Plains', phone: '555-0303', cropType: 'Yellow Maize', acreage: 120 },
-  { id: 'FARM004', name: 'Sophia Nguyen', location: 'South Delta', phone: '555-0304', cropType: 'Mixed Maize', acreage: 300 },
+  { id: 'FARM001', name: 'Samuel Miller', location: 'West Valley', phone: '555-0301' },
+  { id: 'FARM002', name: 'Isabella Garcia', location: 'East Ridge', phone: '555-0302' },
+  { id: 'FARM003', name: 'William Brown', location: 'North Plains', phone: '555-0303' },
+  { id: 'FARM004', name: 'Sophia Nguyen', location: 'South Delta', phone: '555-0304' },
 ];
 
 export type Organization = {

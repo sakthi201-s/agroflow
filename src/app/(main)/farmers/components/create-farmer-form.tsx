@@ -28,8 +28,6 @@ const formSchema = z.object({
   name: z.string().min(2, 'Farmer name must be at least 2 characters.'),
   location: z.string().min(2, 'Location is required.'),
   phone: z.string().min(10, 'Please enter a valid phone number.'),
-  cropType: z.string().optional(),
-  acreage: z.coerce.number().optional(),
 });
 
 type CreateFarmerFormProps = {
@@ -45,8 +43,6 @@ export function CreateFarmerForm({ isOpen, onOpenChange, onFarmerCreated }: Crea
       name: '',
       location: '',
       phone: '',
-      cropType: '',
-      acreage: 0,
     }
   });
 
@@ -56,8 +52,6 @@ export function CreateFarmerForm({ isOpen, onOpenChange, onFarmerCreated }: Crea
       name: values.name,
       location: values.location,
       phone: values.phone,
-      cropType: values.cropType || '',
-      acreage: values.acreage || 0,
     };
     
     onFarmerCreated(newFarmer);
@@ -110,32 +104,6 @@ export function CreateFarmerForm({ isOpen, onOpenChange, onFarmerCreated }: Crea
                   <FormLabel>Phone Number</FormLabel>
                   <FormControl>
                     <Input placeholder="e.g., 555-0301" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-             <FormField
-              control={form.control}
-              name="cropType"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Crop Type (Optional)</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g., Yellow Maize" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-             <FormField
-              control={form.control}
-              name="acreage"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Acreage (Optional)</FormLabel>
-                  <FormControl>
-                    <Input type="number" placeholder="e.g., 150" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
