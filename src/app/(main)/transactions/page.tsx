@@ -1,7 +1,7 @@
 
 'use client';
 
-import { Suspense, useState, useRef } from 'react';
+import React, { Suspense, useState, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { DataTable } from '@/components/data-table';
 import { Badge } from '@/components/ui/badge';
@@ -102,7 +102,7 @@ function TransactionsComponent() {
     const company = searchParams.get('company') || 'Company 1';
     const activeCompany = company as 'Company 1' | 'Company 2';
     
-    const [transactionData, setTransactionData] = useState<Transaction[]>(initialTransactionData);
+    const [transactionData] = useState<Transaction[]>(initialTransactionData);
     const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
     
     const printRef = useRef<HTMLDivElement>(null);
@@ -155,22 +155,6 @@ function TransactionsComponent() {
                     )}
                 </DialogContent>
             </Dialog>
-            <style jsx global>{`
-                @media print {
-                    body * {
-                        visibility: hidden;
-                    }
-                    .print-only-content, .print-only-content * {
-                        visibility: visible;
-                    }
-                    .print-only-content {
-                        position: absolute;
-                        left: 0;
-                        top: 0;
-                        width: 100%;
-                    }
-                }
-            `}</style>
         </div>
     );
 }
