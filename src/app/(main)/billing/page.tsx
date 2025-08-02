@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { PlusCircle, MoreHorizontal, Filter, ArrowUpCircle, ArrowDownCircle, Printer } from 'lucide-react';
 import { DataTable } from '@/components/data-table';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import { CreateBillForm } from './components/create-bill-form';
 import { initialBillingData, initialTransactionData, Bill, Transaction } from '@/lib/data';
@@ -27,12 +27,12 @@ function BillingComponent() {
     const [isCreateBillOpen, setCreateBillOpen] = useState(false);
     const [lastCreatedBill, setLastCreatedBill] = useState<Bill | null>(null);
 
-    const handlePrint = () => {
-        if (!lastCreatedBill) return;
+    const handlePrint = (billToPrint: Bill | null) => {
+        if (!billToPrint) return;
 
         const printWindow = window.open('', '', 'height=600,width=800');
         if (printWindow) {
-            const billItemsHtml = lastCreatedBill.items.map(item => `
+            const billItemsHtml = billToPrint.items.map(item => `
                 <tr style="border-bottom: 1px solid #eee;">
                     <td style="padding: 8px;">
                         <p style="font-weight: 500; margin: 0;">${item.productName}</p>
@@ -47,7 +47,7 @@ function BillingComponent() {
             printWindow.document.write(`
                 <html>
                     <head>
-                        <title>Invoice - ${lastCreatedBill.invoiceId}</title>
+                        <title>Invoice - ${billToPrint.invoiceId}</title>
                         <style>
                             body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; line-height: 1.6; color: #333; }
                             .container { width: 100%; max-width: 800px; margin: 0 auto; padding: 20px; }
@@ -63,9 +63,9 @@ function BillingComponent() {
                     <body>
                         <div class="container">
                             <div class="header">
-                                <h2>Invoice: ${lastCreatedBill.invoiceId}</h2>
-                                <p>Date: ${new Date().toLocaleDateString()} | Due: ${lastCreatedBill.dueDate}</p>
-                                <p>Bill To: ${lastCreatedBill.customer}</p>
+                                <h2>Invoice: ${billToPrint.invoiceId}</h2>
+                                <p>Date: ${new Date().toLocaleDateString()} | Due: ${billToPrint.dueDate}</p>
+                                <p>Bill To: ${billToPrint.customer}</p>
                             </div>
                             <table>
                                 <thead>
@@ -82,7 +82,7 @@ function BillingComponent() {
                                 <tfoot>
                                     <tr class="total-row">
                                         <td colspan="3" style="text-align: right;">Grand Total</td>
-                                        <td style="text-align: right;">$${lastCreatedBill.totalAmount.toFixed(2)}</td>
+                                        <td style="text-align: right;">$${billToPrint.totalAmount.toFixed(2)}</td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -188,6 +188,10 @@ function BillingComponent() {
                 </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => handlePrint(bill)}>
+                    <Printer className="mr-2 h-4 w-4"/> Print Bill
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => handleStatusChange(bill.invoiceId, 'Paid')}>
                     Mark as Paid
                 </DropdownMenuItem>
@@ -236,7 +240,7 @@ function BillingComponent() {
                     </div>
                 </div>
                 <DialogFooter className="flex-col sm:flex-row gap-2 p-4">
-                    <Button variant="outline" onClick={handlePrint}><Printer className="mr-2 h-4 w-4"/> Print</Button>
+                    <Button variant="outline" onClick={() => handlePrint(lastCreatedBill)}><Printer className="mr-2 h-4 w-4"/> Print</Button>
                     <div className="flex-grow" />
                     <Button variant="secondary" onClick={() => finalizeBill('Pending')}>Leave as Pending</Button>
                     <Button onClick={() => finalizeBill('Paid')}>Mark as Paid</Button>
