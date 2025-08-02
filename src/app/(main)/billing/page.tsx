@@ -11,49 +11,9 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Badge } from '@/components/ui/badge';
 import { CreateBillForm } from './components/create-bill-form';
 import { initialBillingData, initialTransactionData, Bill, Transaction } from '@/lib/data';
-import { useReactToPrint } from 'react-to-print';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 
 type FilterType = 'All' | 'Customer' | 'Organization' | 'Farmer';
-
-const PrintableBill = React.forwardRef<HTMLDivElement, { bill: Bill }>(({ bill }, ref) => {
-    return (
-        <div ref={ref} className="p-8">
-             <div className="mb-4">
-                <h2 className="text-2xl font-bold">Invoice: {bill.invoiceId}</h2>
-                <div className="text-muted-foreground">
-                    <p>Date: {new Date().toLocaleDateString()} | Due: {bill.dueDate}</p>
-                    <p>Bill To: {bill.customer}</p>
-                </div>
-            </div>
-            <div className="mt-4 space-y-4">
-                <div className="grid grid-cols-4 font-semibold border-b pb-2">
-                    <div>Product</div>
-                    <div className="text-right">Quantity</div>
-                    <div className="text-right">Price/Unit</div>
-                    <div className="text-right">Total</div>
-                </div>
-                {bill.items.map((item, index) => (
-                    <div key={index} className="grid grid-cols-4 items-center">
-                        <div>
-                            <p className="font-medium">{item.productName}</p>
-                            <p className="text-xs text-muted-foreground">{item.unit}</p>
-                        </div>
-                        <div className="text-right">{item.quantity}</div>
-                        <div className="text-right">${item.price.toFixed(2)}</div>
-                        <div className="text-right font-medium">${(item.quantity * item.price).toFixed(2)}</div>
-                    </div>
-                ))}
-                 <div className="grid grid-cols-4 font-bold border-t pt-2 mt-4">
-                    <div className="col-span-3 text-right">Grand Total</div>
-                    <div className="text-right">${bill.totalAmount.toFixed(2)}</div>
-                </div>
-            </div>
-        </div>
-    )
-});
-PrintableBill.displayName = 'PrintableBill';
-
 
 function BillingComponent() {
     const searchParams = useSearchParams();
@@ -67,12 +27,75 @@ function BillingComponent() {
     const [isCreateBillOpen, setCreateBillOpen] = useState(false);
     const [lastCreatedBill, setLastCreatedBill] = useState<Bill | null>(null);
 
-    const printRef = useRef<HTMLDivElement>(null);
-    const handlePrint = useReactToPrint({
-        content: () => printRef.current,
-        documentTitle: `Bill_${lastCreatedBill?.invoiceId}`,
-    });
+    const handlePrint = () => {
+        if (!lastCreatedBill) return;
 
+        const printWindow = window.open('', '', 'height=600,width=800');
+        if (printWindow) {
+            const billItemsHtml = lastCreatedBill.items.map(item => `
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 8px;">
+                        <p style="font-weight: 500; margin: 0;">${item.productName}</p>
+                        <p style="font-size: 12px; color: #666; margin: 0;">${item.unit}</p>
+                    </td>
+                    <td style="padding: 8px; text-align: right;">${item.quantity}</td>
+                    <td style="padding: 8px; text-align: right;">$${item.price.toFixed(2)}</td>
+                    <td style="padding: 8px; text-align: right; font-weight: 500;">$${(item.quantity * item.price).toFixed(2)}</td>
+                </tr>
+            `).join('');
+
+            printWindow.document.write(`
+                <html>
+                    <head>
+                        <title>Invoice - ${lastCreatedBill.invoiceId}</title>
+                        <style>
+                            body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; line-height: 1.6; color: #333; }
+                            .container { width: 100%; max-width: 800px; margin: 0 auto; padding: 20px; }
+                            .header { margin-bottom: 20px; }
+                            .header h2 { margin: 0; font-size: 24px; }
+                            .header p { margin: 0; color: #666; }
+                            table { width: 100%; border-collapse: collapse; }
+                            th { text-align: left; padding: 8px; border-bottom: 2px solid #333; }
+                            .total-row { font-weight: bold; border-top: 2px solid #333; }
+                            .total-row td { padding: 8px; }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="container">
+                            <div class="header">
+                                <h2>Invoice: ${lastCreatedBill.invoiceId}</h2>
+                                <p>Date: ${new Date().toLocaleDateString()} | Due: ${lastCreatedBill.dueDate}</p>
+                                <p>Bill To: ${lastCreatedBill.customer}</p>
+                            </div>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th style="text-align: right;">Quantity</th>
+                                        <th style="text-align: right;">Price/Unit</th>
+                                        <th style="text-align: right;">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${billItemsHtml}
+                                </tbody>
+                                <tfoot>
+                                    <tr class="total-row">
+                                        <td colspan="3" style="text-align: right;">Grand Total</td>
+                                        <td style="text-align: right;">$${lastCreatedBill.totalAmount.toFixed(2)}</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.focus();
+            printWindow.print();
+        }
+    };
+    
     useEffect(() => {
         setActiveFilter('All');
     }, [activeCompany]);
@@ -187,10 +210,6 @@ function BillingComponent() {
 
   return (
     <>
-    <div style={{ display: "none" }}>
-        {lastCreatedBill && <PrintableBill bill={lastCreatedBill} ref={printRef} />}
-    </div>
-
     <CreateBillForm 
         isOpen={isCreateBillOpen} 
         onOpenChange={setCreateBillOpen}
