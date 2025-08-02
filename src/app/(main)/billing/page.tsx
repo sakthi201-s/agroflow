@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { PlusCircle, MoreHorizontal } from 'lucide-react';
+import { PlusCircle, MoreHorizontal, Filter } from 'lucide-react';
 import { DataTable } from '@/components/data-table';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge';
 type Bill = {
   invoiceId: string;
   customer: string;
+  counterpartyType: 'Customer' | 'Organization';
   company: 'Company 1' | 'Company 2';
   amount: string;
   dueDate: string;
@@ -19,17 +20,18 @@ type Bill = {
 };
 
 const initialBillingData: Bill[] = [
-    { invoiceId: 'INV-2024001', customer: 'John Doe Farms', company: 'Company 1', amount: '$1,250.00', dueDate: '2024-07-30', status: 'Paid' },
-    { invoiceId: 'INV-2024002', customer: 'Global Exports Inc.', company: 'Company 2', amount: '$15,000.00', dueDate: '2024-08-15', status: 'Pending' },
-    { invoiceId: 'INV-2024003', customer: 'Agri Supplies Co.', company: 'Company 1', amount: '$800.50', dueDate: '2024-06-20', status: 'Overdue' },
-    { invoiceId: 'INV-2024004', customer: 'Jane Smith Fields', company: 'Company 1', amount: '$3,500.00', dueDate: '2024-08-05', status: 'Pending' },
-    { invoiceId: 'INV-2024005', customer: 'Maize Traders LLC', company: 'Company 2', amount: '$22,300.00', dueDate: '2024-07-25', status: 'Paid' },
-    { invoiceId: 'INV-2024006', customer: 'Local Coop', company: 'Company 1', amount: '$550.00', dueDate: '2024-08-20', status: 'Pending' },
+    { invoiceId: 'INV-2024001', customer: 'John Doe Farms', counterpartyType: 'Customer', company: 'Company 1', amount: '$1,250.00', dueDate: '2024-07-30', status: 'Paid' },
+    { invoiceId: 'INV-2024002', customer: 'Global Exports Inc.', counterpartyType: 'Organization', company: 'Company 2', amount: '$15,000.00', dueDate: '2024-08-15', status: 'Pending' },
+    { invoiceId: 'INV-2024003', customer: 'Agri Supplies Co.', counterpartyType: 'Organization', company: 'Company 1', amount: '$800.50', dueDate: '2024-06-20', status: 'Overdue' },
+    { invoiceId: 'INV-2024004', customer: 'Jane Smith Fields', counterpartyType: 'Customer', company: 'Company 1', amount: '$3,500.00', dueDate: '2024-08-05', status: 'Pending' },
+    { invoiceId: 'INV-2024005', customer: 'Maize Traders LLC', counterpartyType: 'Organization', company: 'Company 2', amount: '$22,300.00', dueDate: '2024-07-25', status: 'Paid' },
+    { invoiceId: 'INV-2024006', customer: 'Local Coop', counterpartyType: 'Customer', company: 'Company 1', amount: '$550.00', dueDate: '2024-08-20', status: 'Pending' },
 ];
 
 
 export default function BillingPage() {
     const [activeCompany, setActiveCompany] = useState<'Company 1' | 'Company 2'>('Company 1');
+    const [activeFilter, setActiveFilter] = useState<'All' | 'Customer' | 'Organization'>('All');
     const [billingData, setBillingData] = useState<Bill[]>(initialBillingData);
 
     const handleStatusChange = (invoiceId: string, status: Bill['status']) => {
@@ -40,7 +42,15 @@ export default function BillingPage() {
 
     const columns = [
       { header: 'Invoice ID', accessorKey: 'invoiceId' as keyof Bill },
-      { header: 'Customer/Org', accessorKey: 'customer' as keyof Bill },
+      { header: 'Counterparty', accessorKey: 'customer' as keyof Bill },
+      { 
+        header: 'Type', 
+        accessorKey: 'counterpartyType' as keyof Bill,
+        cell: ({ getValue }: { getValue: () => Bill['counterpartyType'] }) => {
+          const type = getValue();
+          return <Badge variant="outline">{type}</Badge>;
+        }
+      },
       { header: 'Company', accessorKey: 'company' as keyof Bill },
       { header: 'Amount', accessorKey: 'amount' as keyof Bill },
       { header: 'Due Date', accessorKey: 'dueDate' as keyof Bill },
@@ -56,7 +66,7 @@ export default function BillingPage() {
       },
        {
         header: 'Actions',
-        accessorKey: 'invoiceId' as keyof Bill, // Using invoiceId to identify the row
+        accessorKey: 'invoiceId' as keyof Bill,
         cell: ({ row }: { row: { original: Bill } }) => {
             const bill = row.original;
             return (
@@ -84,28 +94,43 @@ export default function BillingPage() {
       },
     ];
     
-    const filteredData = billingData.filter(item => item.company === activeCompany);
+    const filteredData = billingData
+        .filter(item => item.company === activeCompany)
+        .filter(item => activeFilter === 'All' || item.counterpartyType === activeFilter);
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Billing System</h1>
-         <div className="flex items-center gap-4">
-            <Tabs
-            defaultValue="Company 1"
-            onValueChange={(value) => setActiveCompany(value as 'Company 1' | 'Company 2')}
-            className="transition-all duration-300"
-            >
-            <TabsList>
-                <TabsTrigger value="Company 1">Fertilizer & Seeds</TabsTrigger>
-                <TabsTrigger value="Company 2">Maize Import/Export</TabsTrigger>
-            </TabsList>
-            </Tabs>
-            <Button>
-            <PlusCircle className="mr-2 h-4 w-4" /> Create Bill
-            </Button>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <h1 className="text-2xl font-bold">Billing System</h1>
+            <div className="flex items-center gap-4 ml-auto">
+                <Tabs
+                defaultValue="Company 1"
+                onValueChange={(value) => setActiveCompany(value as 'Company 1' | 'Company 2')}
+                >
+                <TabsList>
+                    <TabsTrigger value="Company 1">Fertilizer & Seeds</TabsTrigger>
+                    <TabsTrigger value="Company 2">Maize Import/Export</TabsTrigger>
+                </TabsList>
+                </Tabs>
+                <Button>
+                <PlusCircle className="mr-2 h-4 w-4" /> Create Bill
+                </Button>
+            </div>
         </div>
-      </div>
+
+        <div className="flex items-center gap-2">
+            <Filter className="h-5 w-5 text-muted-foreground" />
+            <Tabs
+                defaultValue="All"
+                onValueChange={(value) => setActiveFilter(value as 'All' | 'Customer' | 'Organization')}
+            >
+                <TabsList>
+                    <TabsTrigger value="All">All</TabsTrigger>
+                    <TabsTrigger value="Customer">Customers</TabsTrigger>
+                    <TabsTrigger value="Organization">Organizations</TabsTrigger>
+                </TabsList>
+            </Tabs>
+        </div>
       <DataTable columns={columns} data={filteredData} tableName="Billing"/>
     </div>
   );
