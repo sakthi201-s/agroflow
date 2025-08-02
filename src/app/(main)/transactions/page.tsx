@@ -5,8 +5,6 @@ import { Suspense, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { DataTable } from '@/components/data-table';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { PlusCircle } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { initialTransactionData, Transaction } from '@/lib/data';
 
@@ -71,9 +69,6 @@ function TransactionsComponent() {
                     <TabsTrigger value="Company 2">Maize Import/Export</TabsTrigger>
                 </TabsList>
             </Tabs>
-            <Button>
-            <PlusCircle className="mr-2 h-4 w-4" /> Create Voucher
-            </Button>
         </div>
       </div>
       <DataTable columns={columns} data={filteredData} tableName="Transactions" />

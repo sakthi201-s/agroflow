@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { initialTransactionData, Transaction } from '@/lib/data';
-import { CreateVoucherForm } from './components/create-voucher-form';
 
 const columns = [
   { header: 'Voucher No.', accessorKey: 'id' as keyof Transaction },
@@ -55,17 +54,6 @@ function DayBookComponent() {
     const handleCompanyChange = (company: string) => {
         router.push(`/day-book?company=${company}`);
     };
-
-    const addTransaction = (newTransaction: Omit<Transaction, 'id' | 'company'>) => {
-        setTransactionData(prev => [
-            { 
-                ...newTransaction, 
-                id: `TRN${(prev.length + 1).toString().padStart(3, '0')}`,
-                company: activeCompany
-            }, 
-            ...prev
-        ]);
-    };
     
     const filteredData = transactionData.filter(item => item.company === activeCompany);
   return (
@@ -83,7 +71,6 @@ function DayBookComponent() {
                     <TabsTrigger value="Company 2">Maize Import/Export</TabsTrigger>
                 </TabsList>
             </Tabs>
-            <CreateVoucherForm onSubmit={addTransaction} />
         </div>
       </div>
       <DataTable columns={columns} data={filteredData} tableName="DayBook" />
