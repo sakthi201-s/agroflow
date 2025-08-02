@@ -1,10 +1,12 @@
 'use client'
 
+import { useState } from 'react';
 import { DataTable } from '@/components/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
 import { transactionData, Transaction } from '@/app/(main)/transactions/page';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 
 const columns = [
@@ -41,15 +43,30 @@ const columns = [
 ];
 
 export default function DayBookPage() {
+    const [activeCompany, setActiveCompany] = useState<'Company 1' | 'Company 2'>('Company 1');
+    const filteredData = transactionData.filter(item => item.company === activeCompany);
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Day Book</h1>
-        <Button>
-          <PlusCircle className="mr-2 h-4 w-4" /> Create Voucher
-        </Button>
+        <div className="flex items-center gap-4">
+            <Tabs
+                defaultValue="Company 1"
+                onValueChange={(value) => setActiveCompany(value as 'Company 1' | 'Company 2')}
+                className="transition-all duration-300"
+            >
+            <TabsList>
+                <TabsTrigger value="Company 1">Fertilizer & Seeds</TabsTrigger>
+                <TabsTrigger value="Company 2">Maize Import/Export</TabsTrigger>
+            </TabsList>
+            </Tabs>
+            <Button>
+                <PlusCircle className="mr-2 h-4 w-4" /> Create Voucher
+            </Button>
+        </div>
       </div>
-      <DataTable columns={columns} data={transactionData} tableName="DayBook" />
+      <DataTable columns={columns} data={filteredData} tableName="DayBook" />
     </div>
   );
 }
