@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { PlusCircle, MoreHorizontal, Filter } from 'lucide-react';
 import { DataTable } from '@/components/data-table';
@@ -12,7 +12,7 @@ import { Badge } from '@/components/ui/badge';
 type Bill = {
   invoiceId: string;
   customer: string;
-  counterpartyType: 'Customer' | 'Organization';
+  counterpartyType: 'Customer' | 'Organization' | 'Farmer';
   company: 'Company 1' | 'Company 2';
   amount: string;
   dueDate: string;
@@ -26,13 +26,21 @@ const initialBillingData: Bill[] = [
     { invoiceId: 'INV-2024004', customer: 'Jane Smith Fields', counterpartyType: 'Customer', company: 'Company 1', amount: '$3,500.00', dueDate: '2024-08-05', status: 'Pending' },
     { invoiceId: 'INV-2024005', customer: 'Maize Traders LLC', counterpartyType: 'Organization', company: 'Company 2', amount: '$22,300.00', dueDate: '2024-07-25', status: 'Paid' },
     { invoiceId: 'INV-2024006', customer: 'Local Coop', counterpartyType: 'Customer', company: 'Company 1', amount: '$550.00', dueDate: '2024-08-20', status: 'Pending' },
+    { invoiceId: 'INV-2024007', customer: 'Samuel Miller', counterpartyType: 'Farmer', company: 'Company 2', amount: '$4,000.00', dueDate: '2024-08-10', status: 'Paid' },
+    { invoiceId: 'INV-2024008', customer: 'Isabella Garcia', counterpartyType: 'Farmer', company: 'Company 2', amount: '$6,300.00', dueDate: '2024-08-25', status: 'Pending' },
 ];
 
+type FilterType = 'All' | 'Customer' | 'Organization' | 'Farmer';
 
 export default function BillingPage() {
     const [activeCompany, setActiveCompany] = useState<'Company 1' | 'Company 2'>('Company 1');
-    const [activeFilter, setActiveFilter] = useState<'All' | 'Customer' | 'Organization'>('All');
+    const [activeFilter, setActiveFilter] = useState<FilterType>('All');
     const [billingData, setBillingData] = useState<Bill[]>(initialBillingData);
+
+    useEffect(() => {
+        // Reset filter when company changes to avoid invalid filter states
+        setActiveFilter('All');
+    }, [activeCompany]);
 
     const handleStatusChange = (invoiceId: string, status: Bill['status']) => {
         setBillingData(billingData.map(bill => 
@@ -121,13 +129,22 @@ export default function BillingPage() {
         <div className="flex items-center gap-2">
             <Filter className="h-5 w-5 text-muted-foreground" />
             <Tabs
-                defaultValue="All"
-                onValueChange={(value) => setActiveFilter(value as 'All' | 'Customer' | 'Organization')}
+                value={activeFilter}
+                onValueChange={(value) => setActiveFilter(value as FilterType)}
             >
                 <TabsList>
                     <TabsTrigger value="All">All</TabsTrigger>
-                    <TabsTrigger value="Customer">Customers</TabsTrigger>
-                    <TabsTrigger value="Organization">Organizations</TabsTrigger>
+                    {activeCompany === 'Company 1' ? (
+                        <>
+                            <TabsTrigger value="Customer">Customers</TabsTrigger>
+                            <TabsTrigger value="Organization">Organizations</TabsTrigger>
+                        </>
+                    ) : (
+                        <>
+                            <TabsTrigger value="Farmer">Farmers</TabsTrigger>
+                            <TabsTrigger value="Organization">Organizations</TabsTrigger>
+                        </>
+                    )}
                 </TabsList>
             </Tabs>
         </div>
