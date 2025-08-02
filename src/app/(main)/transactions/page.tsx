@@ -57,11 +57,11 @@ const columns = (onViewDetails: (transaction: Transaction) => void) => [
   },
 ];
 
-function TransactionDetails({ transaction, onPrint }: { transaction: Transaction; onPrint: () => void; }) {
+const PrintableVoucher = React.forwardRef<HTMLDivElement, { transaction: Transaction }>(({ transaction }, ref) => {
     if (!transaction) return null;
     return (
-        <>
-            <DialogHeader>
+        <div ref={ref} className="p-4">
+             <DialogHeader>
                 <DialogTitle>Transaction Details: {transaction.id}</DialogTitle>
                 <DialogDescription>
                     Date: {transaction.date} | Party: {transaction.counterparty}
@@ -90,12 +90,11 @@ function TransactionDetails({ transaction, onPrint }: { transaction: Transaction
                     <div className="text-right">${transaction.totalAmount.toFixed(2)}</div>
                 </div>
             </div>
-            <DialogFooter className="mt-6">
-                <Button onClick={onPrint}><Printer className="mr-2 h-4 w-4" /> Print</Button>
-            </DialogFooter>
-        </>
+        </div>
     )
-}
+});
+PrintableVoucher.displayName = 'PrintableVoucher';
+
 
 function TransactionsComponent() {
     const searchParams = useSearchParams();
@@ -106,6 +105,12 @@ function TransactionsComponent() {
     const [transactionData, setTransactionData] = useState<Transaction[]>(initialTransactionData);
     const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
     
+    const printRef = useRef<HTMLDivElement>(null);
+    const handlePrint = useReactToPrint({
+        content: () => printRef.current,
+        documentTitle: `Voucher_${selectedTransaction?.id}`,
+    });
+
     const handleCompanyChange = (company: string) => {
         router.push(`/transactions?company=${company}`);
     };
@@ -114,12 +119,6 @@ function TransactionsComponent() {
         setSelectedTransaction(transaction);
     };
     
-    const printRef = useRef<HTMLDivElement>(null);
-    const handlePrint = useReactToPrint({
-        content: () => printRef.current,
-        documentTitle: `Voucher_${selectedTransaction?.id}`,
-    });
-
     const filteredData = transactionData.filter(item => item.company === activeCompany);
   
     return (
@@ -147,9 +146,12 @@ function TransactionsComponent() {
             <Dialog open={!!selectedTransaction} onOpenChange={(isOpen) => !isOpen && setSelectedTransaction(null)}>
                 <DialogContent className="max-w-2xl">
                     {selectedTransaction && (
-                       <div ref={printRef} className="p-4 print-only-content">
-                           <TransactionDetails transaction={selectedTransaction} onPrint={handlePrint} />
-                       </div>
+                       <>
+                           <PrintableVoucher transaction={selectedTransaction} ref={printRef} />
+                           <DialogFooter className="mt-6">
+                                <Button onClick={handlePrint}><Printer className="mr-2 h-4 w-4" /> Print</Button>
+                           </DialogFooter>
+                       </>
                     )}
                 </DialogContent>
             </Dialog>
@@ -180,5 +182,3 @@ export default function TransactionsPage() {
         </Suspense>
     )
 }
-
-    
