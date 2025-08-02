@@ -58,7 +58,6 @@ const columns = (onViewDetails: (transaction: Transaction) => void) => [
 ];
 
 const PrintableVoucher = React.forwardRef<HTMLDivElement, { transaction: Transaction }>(({ transaction }, ref) => {
-    if (!transaction) return null;
     return (
         <div ref={ref} className="p-4">
              <DialogHeader>
@@ -106,6 +105,7 @@ function TransactionsComponent() {
     const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
     
     const printRef = useRef<HTMLDivElement>(null);
+    
     const handlePrint = useReactToPrint({
         content: () => printRef.current,
         documentTitle: `Voucher_${selectedTransaction?.id}`,
